@@ -1,0 +1,25 @@
+# we can have the specific settings in here for develop server
+server:
+  port: 8080
+
+spring:
+  config:
+    activate:
+      on-profile: prod # 환경이름설정
+
+  # below should be written with the aws RDS or something associated with develop environment
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+# 배포후 환경변수 설정할 것
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://yorieterdb.c9i6ics8mkd0.ap-northeast-2.rds.amazonaws.com/
+    username: root
+    password: yori1234!
