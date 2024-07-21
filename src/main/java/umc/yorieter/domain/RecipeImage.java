@@ -11,9 +11,9 @@ import lombok.*;
 public class RecipeImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long recipe_image_id;
+    private Long id;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String url;
 
     @OneToOne

@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import umc.yorieter.domain.common.BaseEntity;
 import umc.yorieter.domain.mapping.RecipeLike;
+import umc.yorieter.domain.mapping.Recipe_Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Recipe extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String title;
 
-    @Column(nullable = false, length = 400)
+    @Column(nullable = false)
     private String description;
 
     @Column
@@ -36,6 +37,9 @@ public class Recipe extends BaseEntity {
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<RecipeLike> recipeLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    private List<Recipe_Ingredient> recipeIngredientList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

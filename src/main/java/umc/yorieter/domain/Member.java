@@ -3,6 +3,7 @@ package umc.yorieter.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import umc.yorieter.domain.common.BaseEntity;
+import umc.yorieter.domain.enums.Provider;
 import umc.yorieter.domain.enums.Term;
 import umc.yorieter.domain.mapping.RecipeLike;
 
@@ -44,8 +45,8 @@ public class Member extends BaseEntity {
     @Column(length = 20)
     private String description;
 
-    @Column(length = 20)
-    private String provider;
+    @Enumerated(EnumType.ORDINAL)
+    private Provider provider;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Recipe> recipeList = new ArrayList<>();
