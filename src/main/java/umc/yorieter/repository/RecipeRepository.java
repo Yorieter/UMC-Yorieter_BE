@@ -1,4 +1,8 @@
 package umc.yorieter.repository;
 
-public class RecipeRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import umc.yorieter.domain.Recipe;
+
+public interface RecipeRepository extends JpaRepository<Recipe, Long> {
+
 }

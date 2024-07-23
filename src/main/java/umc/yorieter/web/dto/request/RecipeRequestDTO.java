@@ -1,6 +1,8 @@
-package umc.yorieter.web.dto;
+package umc.yorieter.web.dto.request;
 
 import lombok.*;
+
+import java.util.List;
 
 public class RecipeRequestDTO {
 
@@ -11,8 +13,13 @@ public class RecipeRequestDTO {
     @NoArgsConstructor
     public static class CreateRecipeDTO {
 
+        private Long memberId;
         private String title;
-        private String content;
+        private String description;
+        private Integer calories;
+        // private String imageUrl; <- RecipeImage도 사용 (이거 일단 킵)
+        // private List recipeIngredientList; <- 식재료 넣는건데, 잘 모르겠다
+
 
     }
 
