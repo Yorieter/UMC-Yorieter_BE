@@ -20,6 +20,6 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/yorieterlocal #로컬DB url
-    username: root #로컬DB username
-    password: root #로컬DB password
+    url: ${LDB_URL} #로컬DB url
+    username: ${LDB_USER} #로컬DB username
+    password: ${LDB_PASSWORD} #로컬DB password
