@@ -1,4 +1,4 @@
-package umc.yorieter.web.dto;
+package umc.yorieter.web.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

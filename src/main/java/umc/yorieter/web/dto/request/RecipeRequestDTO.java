@@ -1,4 +1,4 @@
-package umc.yorieter.web.dto;
+package umc.yorieter.web.dto.request;
 
 import lombok.*;
 
