@@ -12,14 +12,20 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${LDB_URL} #로컬DB url
-    username: ${LDB_USER} #로컬DB username
-    password: ${LDB_PASSWORD} #로컬DB password
+    url: jdbc:mysql://localhost:3306/yorieter #로컬DB url
+    username: root #로컬DB username
+    password: 1234 #로컬DB password
+
+  ## JWT Setting
+  # echo 'spring-backend-beotkkotthon-newsletter-project-security-jwt-secret-keyyy' | base64
+jwt:
+  secret: 6c3ac437281fba63ecd27d247a33ba12aec3faaab45c9fd9dc4d56ae73d909263ab5592eb18960bb7686623a861b0b9bd170c7795abc888ce276cf07cfe3f522
