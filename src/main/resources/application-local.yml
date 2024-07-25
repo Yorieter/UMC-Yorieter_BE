@@ -25,7 +25,3 @@ spring:
     password: ${LDB_PASSWORD} #로컬DB password
 
 
-## JWT Setting
-# echo 'spring-backend-umc-project-security-jwt-secret-key' | base64
-jwt:
-  secret: ${JWT_SECRET}

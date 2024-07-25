@@ -39,7 +39,7 @@ public class AuthController {
         Member member = memberRepository.findByUsername(memberLoginRequestDto.getUsername()).orElseThrow(
                 () -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
         tokenDto.setUsername(member.getUsername());
-        tokenDto.setEmail(member.getUsername());
+        tokenDto.setNickname(member.getUsername());
 
         return ApiResponse.onSuccess(tokenDto);
     }

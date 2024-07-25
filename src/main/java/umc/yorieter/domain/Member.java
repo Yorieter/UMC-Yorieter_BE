@@ -59,7 +59,7 @@ public class Member extends BaseEntity {
     private List<RecipeLike> recipeLikeList = new ArrayList<>();
 
     @Builder(builderClassName = "MemberJoinBuilder", builderMethodName = "MemberJoinBuilder")
-    public Member(String nickname, Term term1, Term term2, Term term3, String username, String password, String description, Provider provider, Authority authority) {
+    public Member(String nickname, Term term1, Term term2, Term term3, String username, String password, String description, Authority authority) {
         // 이 빌더는 사용자 회원가입때만 사용할 용도
         this.username = username;
         this.nickname = nickname;
@@ -68,7 +68,6 @@ public class Member extends BaseEntity {
         this.term3 = term3;
         this.password = password;
         this.description = description;
-        this.provider = provider;
         this.authority = authority;
     }
 }

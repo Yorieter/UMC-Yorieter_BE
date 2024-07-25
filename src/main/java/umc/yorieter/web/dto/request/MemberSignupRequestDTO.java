@@ -37,7 +37,6 @@ public class MemberSignupRequestDTO {
                 .term2(CHECKED)
                 .term3(CHECKED)
                 .description(description)
-                .provider(Provider.KAKAO)
                 .build();
     }
 }

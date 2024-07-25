@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Configuration
 @EnableWebSecurity
 @Component
-public class WebSecurityConfig {  // 스프링 시큐리티 구성요소 설정 클래스 (JWT 사용지원을 위한 구성 또한 포함)
+public class WebSecurityConfig {
 
 
     private final TokenProvider tokenProvider;
