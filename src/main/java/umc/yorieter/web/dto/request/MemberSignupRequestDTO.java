@@ -18,7 +18,6 @@ public class MemberSignupRequestDTO {
     String password;
     String nickname;
     String description;
-    Provider provider;
 
     @Builder
     public MemberSignupRequestDTO(String username, String password, String nickname, String description, Provider provider) {
@@ -26,7 +25,6 @@ public class MemberSignupRequestDTO {
         this.password = password;
         this.nickname = nickname;
         this.description = description;
-        this.provider = provider;
     }
 
     public Member toEntity(PasswordEncoder passwordEncoder) {
@@ -34,12 +32,12 @@ public class MemberSignupRequestDTO {
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
+                .authority(Authority.ROLE_USER)
                 .term1(CHECKED)
                 .term2(CHECKED)
                 .term3(CHECKED)
-                .authority(Authority.ROLE_USER)
                 .description(description)
-                .provider(provider)
+                .provider(Provider.KAKAO)
                 .build();
     }
 }

@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username + " 을 DB에서 찾을 수 없습니다."));
     }
 
-    private UserDetails createUserDetails(Member member) {  // email로 Member을 찾고, 찾은 Member의 '사용자DB의PKid,비밀번호,권한'을 가지고 UserDetails 객체를 생성한다.
+    private UserDetails createUserDetails(Member member) {  // username로 Member을 찾고, 찾은 Member의 '사용자DB의PKid,비밀번호,권한'을 가지고 UserDetails 객체를 생성한다.
 
         // 권한 가져오기
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());

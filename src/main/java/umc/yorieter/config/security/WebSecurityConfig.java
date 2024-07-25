@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class WebSecurityConfig {  // 스프링 시큐리티 구성요소 설정 클래스 (JWT 사용지원을 위한 구성 또한 포함)
 
+
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -34,7 +35,7 @@ public class WebSecurityConfig {  // 스프링 시큐리티 구성요소 설정 
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, HttpSecurity httpSecurity) throws Exception {  // HTTP 보안 설정을 구성하는 메소드
-        httpSecurity
+        http
                 .httpBasic(httpBasic -> {
                     httpBasic.disable();
                 })
@@ -58,12 +59,14 @@ public class WebSecurityConfig {  // 스프링 시큐리티 구성요소 설정 
                                 .requestMatchers("/**").permitAll()  // 데모 버전 용도
                                 // .requestMatchers("/", "/login", "/signup", "/swagger-ui/**", "/health").permitAll()  // (Prod Ver.)
                                 .anyRequest().authenticated()
-                );
+                )
+
+
+                .apply(new JwtSecurityConfig(tokenProvider));
 
 
 
         return http.build();
     }
-
 
 }

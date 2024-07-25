@@ -22,9 +22,6 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 15)
-    private String nickname;
-
     @Enumerated(EnumType.ORDINAL)
     private Term term1;
 
@@ -37,8 +34,11 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 15)
     private String username;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, length = 15)
+    private String nickname;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
     private MemberProfile profile;
@@ -61,11 +61,11 @@ public class Member extends BaseEntity {
     @Builder(builderClassName = "MemberJoinBuilder", builderMethodName = "MemberJoinBuilder")
     public Member(String nickname, Term term1, Term term2, Term term3, String username, String password, String description, Provider provider, Authority authority) {
         // 이 빌더는 사용자 회원가입때만 사용할 용도
+        this.username = username;
         this.nickname = nickname;
         this.term1 = term1;
         this.term2 = term2;
         this.term3 = term3;
-        this.username = username;
         this.password = password;
         this.description = description;
         this.provider = provider;
