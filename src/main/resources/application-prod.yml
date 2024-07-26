@@ -21,6 +21,7 @@ spring:
   # 배포후 환경변수 설정할 것
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://yorieterdb.c9i6ics8mkd0.ap-northeast-2.rds.amazonaws.com/
-    username: root
-    password: yori1234!
+    url: ${PDB_URL} #RDS DB url
+    username: ${PDB_USER} #RDS DB username
+    password: ${PDB_PASSWORD} #RDS DB password
+
