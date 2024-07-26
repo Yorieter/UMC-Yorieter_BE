@@ -17,9 +17,8 @@ public class RecipeRequestDTO {
         private String title;
         private String description;
         private Integer calories;
-        // private String imageUrl; <- RecipeImage도 사용 (이거 일단 킵)
-        // private List recipeIngredientList; <- 식재료 넣는건데, 잘 모르겠다
-      
+        // private String imageUrl; <- RecipeImage도 사용 (이거 S3필요하니까 킵)
+        // private List recipeIngredientList; <- 식재료 넣는건데, 킵
 
     }
 
@@ -33,6 +32,10 @@ public class RecipeRequestDTO {
 
         private String title;
         private String content;
+        private String description;
+        private Integer calories;
+        // private String imageUrl; <- RecipeImage도 사용 (이거 일단 킵)
+        // private List recipeIngredientList; <- 식재료 넣는건데, 잘 모르겠다
 
     }
 }

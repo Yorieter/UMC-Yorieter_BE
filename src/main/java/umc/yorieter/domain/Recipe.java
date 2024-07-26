@@ -13,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter // 리뷰 수정하려고 추가
 @DynamicInsert
 @DynamicUpdate
 @Builder
