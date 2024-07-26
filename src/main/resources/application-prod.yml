@@ -18,9 +18,9 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
 
-# 배포후 환경변수 설정할 것
+  # 배포후 환경변수 설정할 것
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${PDB_URL}
-    username: ${PDB_USER}
-    password: ${PDB_PASSWORD}
+    url: jdbc:mysql://yorieterdb.c9i6ics8mkd0.ap-northeast-2.rds.amazonaws.com/
+    username: root
+    password: yori1234!
