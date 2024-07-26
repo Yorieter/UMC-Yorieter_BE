@@ -3,6 +3,7 @@ package umc.yorieter.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import umc.yorieter.domain.common.BaseEntity;
+import umc.yorieter.domain.enums.Authority;
 import umc.yorieter.domain.enums.Provider;
 import umc.yorieter.domain.enums.Term;
 import umc.yorieter.domain.mapping.RecipeLike;
@@ -21,9 +22,6 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 15)
-    private String nickname;
-
     @Enumerated(EnumType.ORDINAL)
     private Term term1;
 
@@ -36,8 +34,11 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 15)
     private String username;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, length = 15)
+    private String nickname;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
     private MemberProfile profile;
@@ -48,9 +49,25 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.ORDINAL)
     private Provider provider;
 
+    @Enumerated(EnumType.STRING)
+    private Authority authority;  // 초기값: ROLE_USER
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Recipe> recipeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<RecipeLike> recipeLikeList = new ArrayList<>();
+
+    @Builder(builderClassName = "MemberJoinBuilder", builderMethodName = "MemberJoinBuilder")
+    public Member(String nickname, Term term1, Term term2, Term term3, String username, String password, String description, Authority authority) {
+        // 이 빌더는 사용자 회원가입때만 사용할 용도
+        this.username = username;
+        this.nickname = nickname;
+        this.term1 = term1;
+        this.term2 = term2;
+        this.term3 = term3;
+        this.password = password;
+        this.description = description;
+        this.authority = authority;
+    }
 }
