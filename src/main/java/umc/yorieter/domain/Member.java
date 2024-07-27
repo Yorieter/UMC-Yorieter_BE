@@ -7,6 +7,7 @@ import umc.yorieter.domain.enums.Authority;
 import umc.yorieter.domain.enums.Provider;
 import umc.yorieter.domain.enums.Term;
 import umc.yorieter.domain.mapping.RecipeLike;
+import umc.yorieter.web.dto.request.MemberRequestDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,5 +70,23 @@ public class Member extends BaseEntity {
         this.password = password;
         this.description = description;
         this.authority = authority;
+    }
+
+    // 회원 정보 수정
+    public void update(MemberRequestDto.MemberUpdateDto memberUpdateDto) {
+        this.nickname = memberUpdateDto.getNickname();
+        this.description = memberUpdateDto.getDescription();
+    }
+
+    // 프로필사진 업로드
+    public void updateProfileUrl(String profileUrl) {
+        if (this.profile == null) {
+            this.profile = MemberProfile.builder()
+                    .member(this)
+                    .url(profileUrl)
+                    .build();
+        } else {
+            this.profile.updateProfileUrl(profileUrl);
+        }
     }
 }
