@@ -19,4 +19,9 @@ public class MemberProfile {
     @OneToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    //프로필 사진 수정
+    public void updateProfileUrl(String url) {
+        this.url = url;
+    }
 }

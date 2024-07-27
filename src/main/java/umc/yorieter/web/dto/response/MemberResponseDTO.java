@@ -21,4 +21,15 @@ public class MemberResponseDTO {
         this.username = entity.getUsername();
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MemberDetailDto {
+
+        Long id;
+        String nickname;
+        String description;
+        String profileUrl;
+    }
 }
