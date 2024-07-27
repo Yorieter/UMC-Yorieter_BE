@@ -8,31 +8,35 @@ import umc.yorieter.service.CommentService.CommentService;
 import umc.yorieter.web.dto.request.CommentRequestDTO;
 import umc.yorieter.web.dto.response.CommentResponseDTO;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/recipes/{recipeId}/comments")
+//@RequestMapping("/recipes/{recipeId}/comments")
 public class CommentController {
     private final CommentService commentService;
 
-    @PostMapping
-    @Operation(summary = "댓글 작성")
+    @PostMapping("/recipes/{recipeId}/comments")
+    @Operation(summary = "댓글 작성 API")
     public ApiResponse<CommentResponseDTO> createComment(@RequestBody CommentRequestDTO commentRequestDTO, @PathVariable Long recipeId) {
-//        commentRequestDTO.setRecipeId(recipeId);
+        commentRequestDTO.setRecipeId(recipeId);
 
         CommentResponseDTO commentResponseDTO = commentService.createComment(commentRequestDTO);
-        return ApiResponse.onCreate(commentResponseDTO);
+        return new ApiResponse<>(true, "COMMENT200","댓글 작성에 성공하였습니다.",commentResponseDTO);
     }
 
-//    @GetMapping
-//    @Operation(summary = "레시피의 댓글 조회")
-//    public ApiResponse<RecipeCommentsResponseDTO> getComments(@PathVariable Long recipeId) {
-//        RecipeCommentsResponseDTO responseDTO = commentService.getCommentsByRecipeId(recipeId);
-//        return ApiResponse.<RecipeCommentsResponseDTO>builder()
-//                .isSuccess(true)
-//                .code("COMMENT200")
-//                .message("댓글 조회에 성공하였습니다.")
-//                .result(responseDTO)
-//                .build();
-//    }
+    @GetMapping("recipes/{recipeId}/comments")
+    @Operation(summary = "레시피의 댓글 조회 API")
+    public ApiResponse<List<CommentResponseDTO>> getComments(@PathVariable Long recipeId) {
+        List<CommentResponseDTO> comments = commentService.getCommentsByRecipeId(recipeId);
+        return new ApiResponse<>(true, "COMMENT200", "댓글 조회에 성공하였습니다.", comments);
+    }
+
+    @DeleteMapping("/recipes/{recipeId}/comments/{commentId}")
+    @Operation(summary = "댓글 삭제 API")
+    public ApiResponse<String> deleteComment(@PathVariable Long recipeId, @PathVariable Long commentId) {
+        commentService.deleteComment(commentId);
+        return new ApiResponse<>(true, "COMMENT200", "댓글 삭제에 성공하였습니다.", null);
+    }
 }
 

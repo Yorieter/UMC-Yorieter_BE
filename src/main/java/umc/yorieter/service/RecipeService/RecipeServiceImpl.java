@@ -4,6 +4,7 @@ package umc.yorieter.service.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import umc.yorieter.domain.Member;
 import umc.yorieter.domain.Recipe;
 import umc.yorieter.domain.mapping.RecipeLike;
@@ -28,6 +29,7 @@ public class RecipeServiceImpl implements RecipeService{
 
     // 레시피 작성
     @Override
+    @Transactional
     public Long createRecipe(Long memberId, RecipeRequestDTO.CreateRecipeDTO createRecipeDTO) {
         // 회원 있나 확인
         Member member = memberRepository.findById(memberId)

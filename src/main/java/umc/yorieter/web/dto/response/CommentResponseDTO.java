@@ -30,6 +30,4 @@ public class CommentResponseDTO {
                 .updatedAt(comment.getUpdatedAt())
                 .build();
     }
-
-
 }
