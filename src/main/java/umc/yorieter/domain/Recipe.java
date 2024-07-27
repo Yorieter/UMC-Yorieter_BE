@@ -33,7 +33,7 @@ public class Recipe extends BaseEntity {
     @Column
     private Integer calories;
 
-    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
+    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private RecipeImage recipeImage;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
@@ -45,4 +45,16 @@ public class Recipe extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    // 레시피이미지 올리기
+    public void updateRecipeImageUrl(String url) {
+        if (this.recipeImage == null) {
+            this.recipeImage = RecipeImage.builder()
+                    .url(url)
+                    .recipe(this)
+                    .build();
+        } else {
+            this.recipeImage.updateRecipeImageUrl(url);
+        }
+    }
 }
