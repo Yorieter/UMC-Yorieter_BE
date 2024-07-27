@@ -13,7 +13,6 @@ import umc.yorieter.domain.mapping.RecipeLike;
 import umc.yorieter.payload.exception.GeneralException;
 import umc.yorieter.payload.status.ErrorStatus;
 import umc.yorieter.repository.MemberRepository;
-import umc.yorieter.repository.RecipeImageRepository;
 import umc.yorieter.repository.RecipeLikeRepository;
 import umc.yorieter.repository.RecipeRepository;
 import umc.yorieter.service.ImageUploadService.ImageUploadService;
