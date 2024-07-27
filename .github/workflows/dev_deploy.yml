@@ -48,6 +48,20 @@ jobs:
           cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .
 
+      - name: Create application-secret.yml
+        run: |
+          echo "spring:
+            cloud:
+              aws:
+                s3:
+                  bucket: ${BUCKET_NAME}
+            jwt:
+              secret: ${JWT_SECRET}
+            " > deploy/application-secret.yml
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
         with:
