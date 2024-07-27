@@ -73,9 +73,11 @@ public class Member extends BaseEntity {
     }
 
     // 회원 정보 수정
-    public void update(MemberRequestDto.MemberUpdateDto memberUpdateDto) {
-        this.nickname = memberUpdateDto.getNickname();
-        this.description = memberUpdateDto.getDescription();
+    public Member update(MemberRequestDto.MemberUpdateDto memberUpdateDto) {
+        if(memberUpdateDto.getNickname() != null ) this.nickname = memberUpdateDto.getNickname();
+        if(memberUpdateDto.getDescription() != null) this.description = memberUpdateDto.getDescription();
+
+        return this;
     }
 
     // 프로필사진 업로드

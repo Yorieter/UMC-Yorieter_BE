@@ -30,8 +30,7 @@ public class MemberController {
     public ApiResponse<MemberResponseDTO.MemberDetailDto> updateMember(
             @PathVariable Long memberId,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "request") @Valid MemberRequestDto.MemberUpdateDto request) {
-        log.info("patch");
+            @RequestPart(value = "request", required = false) @Valid MemberRequestDto.MemberUpdateDto request) {
         return ApiResponse.onSuccess(memberService.updateMember(memberId, image, request));
     }
 }

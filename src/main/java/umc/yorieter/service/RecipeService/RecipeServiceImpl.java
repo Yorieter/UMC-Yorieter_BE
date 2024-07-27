@@ -117,7 +117,7 @@ public class RecipeServiceImpl implements RecipeService{
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.RECIPE_NOT_EXIST_ERROR));
 
-        // 작성자 본인만 삭제 가능하도록
+        // 작성자 본인만 수정 가능하도록
         if (!recipe.getMember().getId().equals(memberId)) {
             throw new GeneralException(ErrorStatus.NO_EDIT_DELETE_PERMISSION);
         }
