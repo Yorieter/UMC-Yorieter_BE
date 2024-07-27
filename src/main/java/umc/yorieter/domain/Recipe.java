@@ -7,13 +7,14 @@ import org.hibernate.annotations.DynamicUpdate;
 import umc.yorieter.domain.common.BaseEntity;
 import umc.yorieter.domain.mapping.RecipeLike;
 import umc.yorieter.domain.mapping.Recipe_Ingredient;
+import umc.yorieter.web.dto.request.RecipeRequestDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter // 리뷰 수정하려고 추가
+//@Setter // 리뷰 수정하려고 추가
 @DynamicInsert
 @DynamicUpdate
 @Builder
@@ -56,5 +57,15 @@ public class Recipe extends BaseEntity {
         } else {
             this.recipeImage.updateRecipeImageUrl(url);
         }
+    }
+
+    // 레시피 수정
+    public Recipe update(RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO) {
+        if (updateRecipeDTO.getTitle() != null) this.title = updateRecipeDTO.getTitle();
+        if (updateRecipeDTO.getDescription() != null) this.description = updateRecipeDTO.getDescription();
+        if (updateRecipeDTO.getCalories() != null) this.calories = updateRecipeDTO.getCalories();
+
+        // 식재료 변경 추가 필요
+        return this;
     }
 }

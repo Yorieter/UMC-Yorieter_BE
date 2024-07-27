@@ -109,17 +109,40 @@ public class RecipeServiceImpl implements RecipeService{
                 .build();
     }
 
-    // 레시피 수정 <- memberId 어디에 쓰일건지 확인
+    // 레시피 수정 <- memberId 어디에 쓰일건지 확인 (작성자 본인만 수정 가능하게 하기 위해 넣어둔건데 param으로 받지 않아도 됩니다)
     @Override
-    public void updateRecipe(Long memberId, Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO) {
+    public RecipeResponseDTO.DetailRecipeDTO updateRecipe(Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO, MultipartFile image) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.RECIPE_NOT_EXIST_ERROR));
 
-        recipe.setTitle(updateRecipeDTO.getTitle());
-        recipe.setDescription(updateRecipeDTO.getDescription());
-        recipe.setCalories(updateRecipeDTO.getCalories());
+        // 작성자 본인만 삭제 가능하도록
+        if (!recipe.getMember().getId().equals(memberId)) {
+            throw new GeneralException(ErrorStatus.NO_EDIT_DELETE_PERMISSION);
+        }
+
+        // updateRecipeDto 있는 경우
+        if (updateRecipeDTO != null) {
+            recipe.update(updateRecipeDTO);
+        }
+
+        // 이미지 있는 경우
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = imageUploadService.uploadImage(image);
+            recipe.updateRecipeImageUrl(imageUrl);
+        }
 
         recipeRepository.save(recipe);
+
+        return RecipeResponseDTO.DetailRecipeDTO.builder()
+                .recipeId(recipe.getId())
+                .memberId(recipe.getMember().getId())
+                .title(recipe.getTitle())
+                .description(recipe.getDescription())
+                .calories(recipe.getCalories())
+                .imageUrl(recipe.getRecipeImage().getUrl())
+                .build();
     }
 
 

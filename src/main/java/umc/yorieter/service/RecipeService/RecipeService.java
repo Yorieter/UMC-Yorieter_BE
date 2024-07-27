@@ -17,7 +17,7 @@ public interface RecipeService {
     RecipeResponseDTO.DetailRecipeDTO getRecipe(Long recipeId);
 
     // 레시피 수정
-    void updateRecipe(Long memberId, Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO);
+    RecipeResponseDTO.DetailRecipeDTO updateRecipe(Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO, MultipartFile image);
 
     // 레시피 삭제
     void deleteRecipe(Long recipeId);

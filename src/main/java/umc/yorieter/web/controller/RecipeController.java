@@ -42,15 +42,13 @@ public class RecipeController {
     }
 
 
-    // 레시피 수정 <- 이게 맞냐?
-    @Operation(summary = "레시피 상세조회 API", description = "레시피를 수정합니다.")
+    // 레시피 수정
+    @Operation(summary = "레시피 수정 API", description = "레시피를 수정합니다.")
     @PatchMapping("/{recipeId}")
-    public ApiResponse<RecipeRequestDTO.UpdateRecipeDTO> updateRecipe
-    (Long memberId, @PathVariable Long recipeId, @RequestBody RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO) {
-        recipeService.updateRecipe(memberId, recipeId, updateRecipeDTO);
-
-        return new ApiResponse<>(true, "COMMON201", "이 레시피를 수정합니다.", null);
-
+    public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> updateRecipe(@PathVariable Long recipeId,
+                                                                       @RequestPart(value = "request", required = false) RecipeRequestDTO.UpdateRecipeDTO request,
+                                                                       @RequestPart(value = "image", required = false) MultipartFile image) {
+        return ApiResponse.onSuccess(recipeService.updateRecipe(recipeId, request, image));
     }
 
 
