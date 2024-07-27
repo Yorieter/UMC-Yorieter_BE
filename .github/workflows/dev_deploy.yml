@@ -46,20 +46,29 @@ jobs:
           cp Procfile deploy/Procfile
           cp -r .ebextensions-dev deploy/.ebextensions
           cp -r .platform deploy/.platform
+          cp -r application-prod.yml deploy/application-prod.yml # application-prod.yml 추가
           cd deploy && zip -r deploy.zip .
 
       - name: Create application-secret.yml
         run: |
-          echo "spring:
-            cloud:
-              aws:
-                s3:
-                  bucket: ${BUCKET_NAME}
-            jwt:
-              secret: ${JWT_SECRET}
-            " > deploy/application-secret.yml
+          echo "cloud:
+            aws:
+              s3:
+                bucket: ${BUCKET_NAME}
+              region:
+                static: ap-northeast-2
+              stack:
+                auto: false
+              credentials:
+                accessKey: ${AWS_ACCESS_KEY_ID}
+                secretKey: ${AWS_SECRET_ACCESS_KEY}
+          jwt:
+            secret: ${JWT_SECRET}
+          " > deploy/application-secret.yml
         env:
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
       - name: Beanstalk Deploy
