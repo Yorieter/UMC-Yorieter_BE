@@ -28,10 +28,8 @@ public class RecipeRequestDTO {
     public static class UpdateRecipeDTO{
 
         private String title;
-        private String content;
         private String description;
         private Integer calories;
-        // private String imageUrl; <- RecipeImage도 사용 (이거 일단 킵)
         // private List recipeIngredientList; <- 식재료 넣는건데, 잘 모르겠다
 
     }

@@ -33,13 +33,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
 
 
-
     // Token Error
     INVALID_TOKEN(HttpStatus.BAD_REQUEST,"TOKEN4000", "Invalid token"),
 
     // Member_Error
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4000", "MEMBER not found"),
     USERNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4001", "USERNAME already exists"),
+    NO_EDIT_DELETE_PERMISSION(HttpStatus.BAD_REQUEST, "MEMBER4002", "수정/삭제의 권한이 없습니다."),
 
     // Security Error
     NOT_FOUND_CONTEXT(HttpStatus.NOT_FOUND,"Security4000", "SecurityContext not found");
@@ -59,19 +59,19 @@ public enum ErrorStatus implements BaseErrorCode {
     @Override
     public ErrorReasonDto getReason() {
         return ErrorReasonDto.builder()
-            .message(message)
-            .code(code)
-            .isSuccess(false)
-            .build();
+                .message(message)
+                .code(code)
+                .isSuccess(false)
+                .build();
     }
 
     @Override
     public ErrorReasonDto getReasonHttpStatus() {
         return ErrorReasonDto.builder()
-            .message(message)
-            .code(code)
-            .isSuccess(false)
-            .httpStatus(httpStatus)
-            .build();
+                .message(message)
+                .code(code)
+                .isSuccess(false)
+                .httpStatus(httpStatus)
+                .build();
     }
 }
