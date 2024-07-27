@@ -3,6 +3,7 @@ package umc.yorieter.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import umc.yorieter.payload.ApiResponse;
 import umc.yorieter.service.RecipeService.RecipeService;
 import umc.yorieter.web.dto.request.RecipeRequestDTO;
@@ -20,18 +21,23 @@ public class RecipeController {
 
     // 레시피 작성
     @Operation(summary = "레시피 작성 API", description = "레시피를 작성합니다.")
-    @PostMapping("/{memberId}")
-    public ApiResponse<Long> create(@PathVariable Long memberId, @RequestBody RecipeRequestDTO.CreateRecipeDTO createRecipeDTO){
-
-        recipeService.createRecipe(memberId, createRecipeDTO);
-        return new ApiResponse<>(true, "COMMON200", "레시피를 작성했습니다.",null);
+    @PostMapping("")
+    public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> create(@RequestPart(value = "request") RecipeRequestDTO.CreateRecipeDTO request,
+                                                                 @RequestPart(value = "image") MultipartFile image){
+        return ApiResponse.onSuccess(recipeService.createRecipe(request, image));
     }
 
+    // 모든레시피 조회 (생성일자순 정렬) 추후에 좋아요 순서로 변경 필요
+    @Operation(summary = "모든 레시피 조회 API", description = "레시피 리스트를 조회합니다..")
+    @GetMapping("")
+    public ApiResponse<RecipeResponseDTO.AllRecipeListDto> getRecipeList(){
+        return ApiResponse.onSuccess(recipeService.getAllRecipes());
+    }
 
     // 레시피 (상세)조회
     @Operation(summary = "레시피 상세조회 API", description = "레시피를 상세조회합니다.")
     @GetMapping("/{recipeId}")
-    public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> getDetailRecipe( @PathVariable Long recipeId) {
+    public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> getDetailRecipe(@PathVariable Long recipeId) {
         return ApiResponse.onSuccess(recipeService.getRecipe(recipeId));
     }
 
