@@ -19,4 +19,8 @@ public class RecipeImage {
     @OneToOne
     @JoinColumn(name = "recipe_id", nullable = false)
     private Recipe recipe;
+
+    public void updateRecipeImageUrl(String url) {
+        this.url = url;
+    }
 }

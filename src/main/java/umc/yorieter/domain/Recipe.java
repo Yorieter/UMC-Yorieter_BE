@@ -7,13 +7,14 @@ import org.hibernate.annotations.DynamicUpdate;
 import umc.yorieter.domain.common.BaseEntity;
 import umc.yorieter.domain.mapping.RecipeLike;
 import umc.yorieter.domain.mapping.Recipe_Ingredient;
+import umc.yorieter.web.dto.request.RecipeRequestDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter // 리뷰 수정하려고 추가
+//@Setter // 리뷰 수정하려고 추가
 @DynamicInsert
 @DynamicUpdate
 @Builder
@@ -33,7 +34,7 @@ public class Recipe extends BaseEntity {
     @Column
     private Integer calories;
 
-    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
+    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private RecipeImage recipeImage;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
@@ -45,4 +46,26 @@ public class Recipe extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    // 레시피이미지 올리기
+    public void updateRecipeImageUrl(String url) {
+        if (this.recipeImage == null) {
+            this.recipeImage = RecipeImage.builder()
+                    .url(url)
+                    .recipe(this)
+                    .build();
+        } else {
+            this.recipeImage.updateRecipeImageUrl(url);
+        }
+    }
+
+    // 레시피 수정
+    public Recipe update(RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO) {
+        if (updateRecipeDTO.getTitle() != null) this.title = updateRecipeDTO.getTitle();
+        if (updateRecipeDTO.getDescription() != null) this.description = updateRecipeDTO.getDescription();
+        if (updateRecipeDTO.getCalories() != null) this.calories = updateRecipeDTO.getCalories();
+
+        // 식재료 변경 추가 필요
+        return this;
+    }
 }

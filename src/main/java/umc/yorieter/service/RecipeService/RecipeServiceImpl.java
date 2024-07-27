@@ -2,9 +2,11 @@ package umc.yorieter.service.RecipeService;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import umc.yorieter.config.security.util.SecurityUtil;
 import umc.yorieter.domain.Member;
 import umc.yorieter.domain.Recipe;
 import umc.yorieter.domain.mapping.RecipeLike;
@@ -13,27 +15,37 @@ import umc.yorieter.payload.status.ErrorStatus;
 import umc.yorieter.repository.MemberRepository;
 import umc.yorieter.repository.RecipeLikeRepository;
 import umc.yorieter.repository.RecipeRepository;
+import umc.yorieter.service.ImageUploadService.ImageUploadService;
 import umc.yorieter.web.dto.request.RecipeRequestDTO;
 import umc.yorieter.web.dto.response.RecipeResponseDTO;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class RecipeServiceImpl implements RecipeService{
 
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
     private final RecipeLikeRepository recipeLikeRepository;
+    private final ImageUploadService imageUploadService;
 
     // 레시피 작성
     @Override
-    @Transactional
-    public Long createRecipe(Long memberId, RecipeRequestDTO.CreateRecipeDTO createRecipeDTO) {
-        // 회원 있나 확인
+    public RecipeResponseDTO.DetailRecipeDTO createRecipe(RecipeRequestDTO.CreateRecipeDTO createRecipeDTO, MultipartFile image) {
+        // 회원 확인
+        Long memberId = SecurityUtil.getCurrentMemberId();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_EXIST_ERROR));
+
+        // 이미지 업로드 처리
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            imageUrl = imageUploadService.uploadImage(image);
+        }
 
         // DTO에서 데이터 가져와 Recipe 객제 생성
         Recipe recipe = Recipe.builder()
@@ -43,40 +55,94 @@ public class RecipeServiceImpl implements RecipeService{
                 .calories(createRecipeDTO.getCalories())
                 .build();
 
-        // 레시피 저장
-        return recipeRepository.save(recipe).getId(); // 생성한 ID값 반환
+        // 이미지 URL 설정
+        if (imageUrl != null) {
+            recipe.updateRecipeImageUrl(imageUrl);  // 이미지 URL 업데이트
+        }
 
+        // 레시피 저장
+        Recipe savedRecipe = recipeRepository.save(recipe);
+
+        return RecipeResponseDTO.DetailRecipeDTO.builder()
+                .recipeId(savedRecipe.getId())
+                .memberId(savedRecipe.getMember().getId())
+                .title(savedRecipe.getTitle())
+                .description(savedRecipe.getDescription())
+                .calories(savedRecipe.getCalories())
+                .imageUrl(savedRecipe.getRecipeImage() != null ? savedRecipe.getRecipeImage().getUrl() : null)
+                .build();
     }
 
-    
+    // 레시피 전체 조회 (생성시간순 정렬) 추후 좋아요순으로 변경 필요
+    @Override
+    public RecipeResponseDTO.AllRecipeListDto getAllRecipes() {
+        List<Recipe> recipes = recipeRepository.findAll();
+        List<RecipeResponseDTO.DetailRecipeDTO> detailRecipeDTOs = recipes.stream()
+                .map(recipe -> RecipeResponseDTO.DetailRecipeDTO.builder()
+                        .recipeId(recipe.getId())
+                        .memberId(recipe.getMember().getId())
+                        .title(recipe.getTitle())
+                        .description(recipe.getDescription())
+                        .calories(recipe.getCalories())
+                        .imageUrl(recipe.getRecipeImage().getUrl())
+                        .build())
+                .collect(Collectors.toList());
+
+        return RecipeResponseDTO.AllRecipeListDto.builder()
+                .recipeList(detailRecipeDTOs)
+                .build();
+    }
+
     // 레시피 (상세)조회
     @Override
     public RecipeResponseDTO.DetailRecipeDTO getRecipe(Long recipeId) {
-        System.out.println("Fetching recipe with ID: " + recipeId);
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.RECIPE_NOT_EXIST_ERROR));
 
-
         return RecipeResponseDTO.DetailRecipeDTO.builder()
+                .recipeId(recipe.getId())
+                .memberId(recipe.getMember().getId())
                 .title(recipe.getTitle())
                 .description(recipe.getDescription())
                 .calories(recipe.getCalories())
+                .imageUrl(recipe.getRecipeImage().getUrl())
                 .build();
-
     }
 
-
-    // 레시피 수정 <- memberId 어디에 쓰일건지 확인
+    // 레시피 수정 <- memberId 어디에 쓰일건지 확인 (작성자 본인만 수정 가능하게 하기 위해 넣어둔건데 param으로 받지 않아도 됩니다)
     @Override
-    public void updateRecipe(Long memberId, Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO) {
+    public RecipeResponseDTO.DetailRecipeDTO updateRecipe(Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO, MultipartFile image) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.RECIPE_NOT_EXIST_ERROR));
 
-        recipe.setTitle(updateRecipeDTO.getTitle());
-        recipe.setDescription(updateRecipeDTO.getDescription());
-        recipe.setCalories(updateRecipeDTO.getCalories());
+        // 작성자 본인만 수정 가능하도록
+        if (!recipe.getMember().getId().equals(memberId)) {
+            throw new GeneralException(ErrorStatus.NO_EDIT_DELETE_PERMISSION);
+        }
+
+        // updateRecipeDto 있는 경우
+        if (updateRecipeDTO != null) {
+            recipe.update(updateRecipeDTO);
+        }
+
+        // 이미지 있는 경우
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = imageUploadService.uploadImage(image);
+            recipe.updateRecipeImageUrl(imageUrl);
+        }
 
         recipeRepository.save(recipe);
+
+        return RecipeResponseDTO.DetailRecipeDTO.builder()
+                .recipeId(recipe.getId())
+                .memberId(recipe.getMember().getId())
+                .title(recipe.getTitle())
+                .description(recipe.getDescription())
+                .calories(recipe.getCalories())
+                .imageUrl(recipe.getRecipeImage().getUrl())
+                .build();
     }
 
 
@@ -134,11 +200,4 @@ public class RecipeServiceImpl implements RecipeService{
         recipeLikeRepository.delete(recipeLike);
 
     }
-
-
-
-
-
-
-
 }
