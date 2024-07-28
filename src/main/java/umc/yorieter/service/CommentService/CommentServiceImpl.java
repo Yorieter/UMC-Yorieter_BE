@@ -37,13 +37,11 @@ public class CommentServiceImpl implements CommentService{
         Member member = memberRepository.findById(commentRequestDTO.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid member ID: " + commentRequestDTO.getMemberId()));
 
-        Comment comment = Comment.builder()
-                .content(commentRequestDTO.getContent())
-                .recipe(recipe)
-                .member(member)
-                .build();
-
+        // 부모 댓글이 없는 경우 처리
+        Comment comment = commentConverter.toCommentEntity(commentRequestDTO, recipe, member, null);
         Comment savedComment = commentRepository.save(comment);
+
+        // 저장된 댓글을 DTO로 변환하여 반환합니다.
         return commentConverter.toCommentResponseDTO(savedComment);
     }
 
@@ -70,4 +68,23 @@ public class CommentServiceImpl implements CommentService{
 
         commentRepository.delete(comment);
     }
+
+    @Override
+    @Transactional
+    public CommentResponseDTO createReply(Long parentCommentId, CommentRequestDTO commentRequestDTO) {
+        Comment parentComment = commentRepository.findById(parentCommentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid parent comment ID: " + parentCommentId));
+
+        Member member = memberRepository.findById(commentRequestDTO.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid member ID: " + commentRequestDTO.getMemberId()));
+
+        Recipe recipe = recipeRepository.findById(commentRequestDTO.getRecipeId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid recipe ID: " + commentRequestDTO.getRecipeId()));
+
+        Comment reply = commentConverter.toCommentEntity(commentRequestDTO, recipe, member, parentComment);
+        Comment savedComment = commentRepository.save(reply);
+
+        return commentConverter.toCommentResponseDTO(savedComment);
+    }
+
 }
