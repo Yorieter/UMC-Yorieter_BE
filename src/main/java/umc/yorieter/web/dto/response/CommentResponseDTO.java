@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import umc.yorieter.domain.Comment;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -19,6 +22,8 @@ public class CommentResponseDTO {
     private LocalDateTime updatedAt;
     private Long memberId;
     private Long recipeId;
+    private Long parentCommentId;
+    private List<CommentResponseDTO> childComments;
 
     public static CommentResponseDTO fromComment(Comment comment) {
         return CommentResponseDTO.builder()
@@ -28,6 +33,12 @@ public class CommentResponseDTO {
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
+                .parentCommentId(comment.getParentComment() == null ? null : comment.getParentComment().getId())  // Set parentCommentId
+                .childComments(comment.getChildComments() == null ?
+                        new ArrayList<>() :
+                        comment.getChildComments().stream()
+                                .map(CommentResponseDTO::fromComment)
+                                .collect(Collectors.toList()))
                 .build();
     }
 }

@@ -2,6 +2,7 @@ package umc.yorieter.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import umc.yorieter.payload.ApiResponse;
 import umc.yorieter.service.CommentService.CommentService;
@@ -37,6 +38,26 @@ public class CommentController {
     public ApiResponse<String> deleteComment(@PathVariable Long recipeId, @PathVariable Long commentId) {
         commentService.deleteComment(commentId);
         return new ApiResponse<>(true, "COMMENT200", "댓글 삭제에 성공하였습니다.", null);
+    }
+
+    @PostMapping("/recipes/{recipeId}/comments/{commentId}/replies")
+    @Operation(summary = "대댓글 작성 API")
+    public ApiResponse<CommentResponseDTO> createReply(
+            @RequestBody CommentRequestDTO commentRequestDTO,
+            @PathVariable Long recipeId,
+            @PathVariable Long commentId) {
+
+        commentRequestDTO.setRecipeId(recipeId);
+        try {
+            CommentResponseDTO commentResponseDTO = commentService.createReply(commentId, commentRequestDTO);
+
+            return new ApiResponse<>(true, "COMMENT200", "대댓글 작성에 성공하였습니다.", commentResponseDTO);
+        } catch (IllegalArgumentException e) {
+            return new ApiResponse<>(false, "COMMENT400", e.getMessage(), null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse<>(false, "COMMENT500", "대댓글 작성에 실패했습니다.", null);
+        }
     }
 }
 

@@ -9,4 +9,5 @@ public interface CommentService {
     CommentResponseDTO createComment (CommentRequestDTO commentRequestDTO);
     List<CommentResponseDTO> getCommentsByRecipeId (Long recipeId);
     void deleteComment (Long recipeId);
+    CommentResponseDTO createReply(Long parentCommentId, CommentRequestDTO commentRequestDTO);
 }
