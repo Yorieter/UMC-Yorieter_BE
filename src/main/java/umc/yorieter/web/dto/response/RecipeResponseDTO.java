@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.List;
+
 public class RecipeResponseDTO {
 
     @Builder
@@ -24,4 +27,26 @@ public class RecipeResponseDTO {
     }
 
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentPreViewListDTO{
+        List<CommentPreViewDTO> commentList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentPreViewDTO{
+        String username;
+        String content;
+        LocalDate createdAt;
+    }
 }

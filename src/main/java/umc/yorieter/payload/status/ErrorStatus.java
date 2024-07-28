@@ -30,9 +30,8 @@ public enum ErrorStatus implements BaseErrorCode {
     RECIPELIKE_NOT_EXIST_ERROR(HttpStatus.resolve(400),"RECIPELIKE400","좋아요 한 레시피가 아닙니다."),
 
 
-
-
-
+    // Page Error
+    INVALID_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "PAGE_4001", "올바르지 않은 페이징 번호입니다."),
 
     // Token Error
     INVALID_TOKEN(HttpStatus.BAD_REQUEST,"TOKEN4000", "Invalid token"),

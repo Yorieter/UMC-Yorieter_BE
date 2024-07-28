@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import umc.yorieter.domain.Member;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -31,5 +33,76 @@ public class MemberResponseDTO {
         String nickname;
         String description;
         String profileUrl;
+    }
+
+
+    //멤버가 작성한 게시물
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RecipePreViewListDTO{
+        List<MemberResponseDTO.RecipePreViewDTO> recipeList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RecipePreViewDTO{
+        String title;
+        LocalDate createdAt;
+    }
+
+    //멤버가 단 댓글 리스트
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentPreViewListDTO{
+        List<RecipeResponseDTO.CommentPreViewDTO> commentList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentPreViewDTO{
+        String username;
+        String content;
+        LocalDate createdAt;
+    }
+
+    //멤버가 좋아요한 레시피 목록
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RecipeLikePreViewListDTO{
+        List<RecipeLikePreViewDTO> recipeLikeList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RecipeLikePreViewDTO{
+        String title;
+        LocalDate createdAt;
     }
 }
