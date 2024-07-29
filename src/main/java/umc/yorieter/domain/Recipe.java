@@ -14,7 +14,6 @@ import java.util.List;
 
 @Entity
 @Getter
-//@Setter // 리뷰 수정하려고 추가
 @DynamicInsert
 @DynamicUpdate
 @Builder
@@ -64,8 +63,14 @@ public class Recipe extends BaseEntity {
         if (updateRecipeDTO.getTitle() != null) this.title = updateRecipeDTO.getTitle();
         if (updateRecipeDTO.getDescription() != null) this.description = updateRecipeDTO.getDescription();
         if (updateRecipeDTO.getCalories() != null) this.calories = updateRecipeDTO.getCalories();
+        if (updateRecipeDTO.getIngredientNames() != null) this.calories = updateRecipeDTO.getCalories();
 
-        // 식재료 변경 추가 필요
         return this;
     }
+
+
+
+
+
+
 }

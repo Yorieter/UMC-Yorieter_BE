@@ -23,8 +23,8 @@ public interface RecipeService {
     void deleteRecipe(Long recipeId);
 
     // 레시피 좋아요
-    void addLike(Long memberId, Long recipeId);
+    void addLike(Long recipeId);
 
     // 레시피 좋아요 해제
-    void deleteLike(Long memberId, Long recipeId);
+    void deleteLike(Long recipeId);
 }

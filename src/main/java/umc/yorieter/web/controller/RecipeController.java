@@ -2,6 +2,7 @@ package umc.yorieter.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import umc.yorieter.payload.ApiResponse;
@@ -64,8 +65,8 @@ public class RecipeController {
     // 레시피 좋아요
     @Operation(summary = "레시피 좋아요 API", description = "레시피 좋아요를 합니다.")
     @PostMapping("/{recipeId}/liked")
-    public ApiResponse<?> addLike(@RequestParam  Long memberId, @PathVariable Long recipeId) {
-        recipeService.addLike(memberId, recipeId);
+    public ApiResponse<?> addLike(@PathVariable Long recipeId) {
+        recipeService.addLike(recipeId);
 
         return new ApiResponse<>(true, "COMMON201", "이 레시피를 좋아합니다.", null);
     }
@@ -74,8 +75,8 @@ public class RecipeController {
     // 레시피 좋아요 해제
     @Operation(summary = "레시피 좋아요 해제 API", description = "레시피 좋아요를 해제합니다.")
     @DeleteMapping("/{recipeId}/delete")
-    public ApiResponse<?> deleteLike(@RequestParam Long memberId, @PathVariable Long recipeId){
-        recipeService.deleteLike(memberId, recipeId);
+    public ApiResponse<?> deleteLike(@PathVariable Long recipeId){
+        recipeService.deleteLike(recipeId);
 
         return new ApiResponse<>(true, "COMMON204", "레시피 좋아요를 해제했습니다.",null);
     }

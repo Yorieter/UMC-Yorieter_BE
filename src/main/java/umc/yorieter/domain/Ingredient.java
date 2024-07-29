@@ -25,4 +25,12 @@ public class Ingredient {
 
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
     private List<Recipe_Ingredient> recipeIngredientListList = new ArrayList<>();
+
+
+    public Ingredient(Long id, String ingredientName, Integer calorie) {
+        this.id = id;
+        this.name = ingredientName;
+        this.calorie = calorie;
+
+    }
 }
