@@ -2,12 +2,13 @@ package umc.yorieter.web.dto.request;
 
 import lombok.*;
 
+import java.util.List;
+
 
 public class RecipeRequestDTO {
 
     @Builder
     @Getter
-    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class CreateRecipeDTO {
@@ -15,14 +16,13 @@ public class RecipeRequestDTO {
         private String title;
         private String description;
         private Integer calories;
-        // private List recipeIngredientList; <- 식재료 넣는건데, 킵
+        private List<String> ingredientNames; // 식재료 리스트 추가
 
     }
 
 
     @Builder
     @Getter
-    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class UpdateRecipeDTO{
@@ -30,7 +30,7 @@ public class RecipeRequestDTO {
         private String title;
         private String description;
         private Integer calories;
-        // private List recipeIngredientList; <- 식재료 넣는건데, 잘 모르겠다
+        private List<String> ingredientNames; // 식재료 리스트 추가
 
     }
 }

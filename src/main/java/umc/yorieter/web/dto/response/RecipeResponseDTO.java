@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class RecipeResponseDTO {
@@ -21,9 +22,8 @@ public class RecipeResponseDTO {
         private String description;
         private Integer calories;
         private String imageUrl;
-        // private List recipeIngredientList; <- 식재료 넣는건데, 킵
-        // private List recipeLikeList; <- 이것도 킵
-        // private List commentList; <- 이것도 킵
+        private List<String> ingredientNames; // 식재료 리스트 추가
+        private LocalDateTime createdAt;
     }
 
     @Builder
@@ -32,5 +32,6 @@ public class RecipeResponseDTO {
     @NoArgsConstructor
     public static class AllRecipeListDto {
         List<DetailRecipeDTO> recipeList;
+        private LocalDateTime createdAt;
     }
 }
