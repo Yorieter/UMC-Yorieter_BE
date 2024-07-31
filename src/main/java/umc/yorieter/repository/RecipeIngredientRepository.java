@@ -8,5 +8,6 @@ import umc.yorieter.domain.mapping.Recipe_Ingredient;
 import java.util.List;
 
 
-public interface RecipeIngredientRepository extends JpaRepository<Ingredient, Long> {
+public interface RecipeIngredientRepository extends JpaRepository<Recipe_Ingredient, Long> {
+    boolean existsByRecipeAndIngredient(Recipe recipe, Ingredient ingredient);
 }

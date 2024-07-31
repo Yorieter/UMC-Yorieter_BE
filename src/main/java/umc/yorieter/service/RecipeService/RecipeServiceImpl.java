@@ -1,10 +1,14 @@
 package umc.yorieter.service.RecipeService;
 
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import umc.yorieter.config.security.util.SecurityUtil;
 import umc.yorieter.domain.Ingredient;
@@ -17,23 +21,32 @@ import umc.yorieter.payload.status.ErrorStatus;
 import umc.yorieter.repository.*;
 import umc.yorieter.service.ImageUploadService.ImageUploadService;
 import umc.yorieter.web.dto.request.RecipeRequestDTO;
+import umc.yorieter.web.dto.response.IngredientResponseDTO;
 import umc.yorieter.web.dto.response.RecipeResponseDTO;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class RecipeServiceImpl implements RecipeService{
+public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
     private final RecipeLikeRepository recipeLikeRepository;
     private final ImageUploadService imageUploadService;
     private final IngredientRepository ingredientRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
+    RestTemplate restTemplate = new RestTemplate();
 
     // 레시피 & 식재료 함께 조회 (JPQL 메소드)
     public Recipe getRecipeWithIngredients(Long recipeId) {
@@ -55,54 +68,72 @@ public class RecipeServiceImpl implements RecipeService{
             imageUrl = imageUploadService.uploadImage(image);
         }
 
-        // DTO에서 데이터 가져와 Recipe 객제 생성
+        // DTO에서 데이터 가져와 Recipe 객체 생성
         Recipe recipe = Recipe.builder()
                 .member(member)
                 .title(createRecipeDTO.getTitle())
                 .description(createRecipeDTO.getDescription())
-                .calories(createRecipeDTO.getCalories())
-                .recipeIngredientList(new ArrayList<>()) // 식재료 초기화 추가
+                .calories(0)
+                .recipeIngredientList(new ArrayList<>())
                 .build();
-
 
         // 이미지 URL 설정
         if (imageUrl != null) {
-            recipe.updateRecipeImageUrl(imageUrl);  // 이미지 URL 업데이트
+            recipe.updateRecipeImageUrl(imageUrl); // 이미지 URL 업데이트
         }
 
-        // 식재료 추가
-        List<Recipe_Ingredient> recipeIngredientList = new ArrayList<>();
-        for (String ingredientName : createRecipeDTO.getIngredientNames()) {
-            // 식재료 찾고 없으면 새로 생성
-            Ingredient ingredient = ingredientRepository.findByName(ingredientName)
-                    .orElseGet(() -> ingredientRepository.save(new Ingredient(null, ingredientName, null))); // 이름만 새로 저장 ..
-
-            // Recipe_Ingredient 객체 생성
-            Recipe_Ingredient recipeIngredient = Recipe_Ingredient.builder()
-                    .recipe(recipe)
-                    .ingredient(ingredient)
-                    .build();
-
-            // recipeIngredientList에 추가
-            recipeIngredientList.add(recipeIngredient);
-        }
-
-        // Recipe에 식재료 리스트 추가
-        recipe.getRecipeIngredientList().addAll(recipeIngredientList);
-
-
-        // 레시피 저장
+        // Recipe 저장
         Recipe savedRecipe = recipeRepository.save(recipe);
 
+        // 식재료 추가 및 저장
+        List<Recipe_Ingredient> recipeIngredientList = createRecipeDTO.getIngredientNames().stream()
+                .map(ingredientName -> {
+                    // searchIngredient 호출하여 IngredientDto 객체 반환
+                    IngredientResponseDTO.IngredientDto ingredientDto = searchIngredient(ingredientName, savedRecipe.getId());
+
+                    // Ingredient 객체 검색 (중복 방지)
+                    Ingredient ingredient = ingredientRepository.findByName(ingredientDto.getName())
+                            .orElseThrow(() -> new GeneralException(ErrorStatus.INGREDIENT_NOT_FOUND, "Ingredient not found after search."));
+
+                    // Recipe_Ingredient 객체 생성
+                    Recipe_Ingredient recipeIngredient = Recipe_Ingredient.builder()
+                            .recipe(savedRecipe)
+                            .ingredient(ingredient)
+                            .build();
+
+                    // 중복 체크: 동일한 Recipe와 Ingredient의 조합이 이미 존재하는지 확인
+                    boolean alreadyExists = recipeIngredientRepository.existsByRecipeAndIngredient(savedRecipe, ingredient);
+                    if (!alreadyExists) {
+                        // Recipe_Ingredient 저장
+                        recipeIngredientRepository.save(recipeIngredient);
+                    }
+
+                    return recipeIngredient;
+                })
+                .collect(Collectors.toList());
+
+        // 총 칼로리 합산
+        int totalCalories = recipeIngredientList.stream()
+                .mapToInt(recipeIngredient -> recipeIngredient.getIngredient().getCalorie() != null ? recipeIngredient.getIngredient().getCalorie() : 0)
+                .sum();
+
+        // 레시피 칼로리 업데이트
+        savedRecipe.updateCalories(totalCalories);
+        recipeRepository.save(savedRecipe);
+
+        // 응답 DTO 작성 및 반환
+        List<String> ingredientNames = recipeIngredientList.stream()
+                .map(recipeIngredient -> recipeIngredient.getIngredient().getName())
+                .collect(Collectors.toList());
 
         return RecipeResponseDTO.DetailRecipeDTO.builder()
                 .recipeId(savedRecipe.getId())
                 .memberId(savedRecipe.getMember().getId())
                 .title(savedRecipe.getTitle())
                 .description(savedRecipe.getDescription())
-                .calories(savedRecipe.getCalories())
+                .calories(totalCalories)
                 .imageUrl(savedRecipe.getRecipeImage() != null ? savedRecipe.getRecipeImage().getUrl() : null)
-                .ingredientNames(createRecipeDTO.getIngredientNames()) // 식재료 리스트 추가
+                .ingredientNames(ingredientNames)
                 .build();
     }
 
@@ -166,8 +197,6 @@ public class RecipeServiceImpl implements RecipeService{
                 .createdAt(recipe.getCreatedAt())
                 .build();
     }
-
-
 
 
     // 레시피 수정
@@ -274,5 +303,88 @@ public class RecipeServiceImpl implements RecipeService{
 
         recipeLikeRepository.delete(recipeLike);
 
+    }
+
+    @Value("${api.service.key}")
+    private String serviceKey;
+
+    @Override
+    public IngredientResponseDTO.IngredientDto searchIngredient(String name, Long recipeId) {
+        String url = "https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo/getFoodNtrCpntDbInq";
+
+        try {
+            // URL 인코딩
+            String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8.toString());
+            String encodedServiceKey = URLEncoder.encode(serviceKey, StandardCharsets.UTF_8.toString());
+
+            // 쿼리 파라미터 생성
+            String query = String.format("serviceKey=%s&pageNo=1&numOfRows=10&type=json&FOOD_NM_KR=%s",
+                    encodedServiceKey, encodedName);
+
+            // URI 객체 생성
+            URI uri = new URI(url + "?" + query);
+
+            // 로그에 인코딩된 URI 출력
+            log.info("Encoded URI: {}", uri);
+
+            // HTTP GET 요청
+            ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+
+            // 응답을 JSON 형태로 파싱
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+
+            // JSON 응답에서 필요한 데이터 추출
+            JsonNode itemsNode = rootNode.path("body").path("items");
+
+            if (itemsNode.isArray() && itemsNode.size() > 0) {
+                JsonNode item = itemsNode.get(0);  // 첫 번째 아이템
+
+                // AMT_NUM1 (칼로리) 데이터 추출
+                String calorieStr = item.path("AMT_NUM1").asText();
+                Integer calorie = null;
+
+                if (calorieStr != null && !calorieStr.isEmpty()) {
+                    try {
+                        calorie = Integer.parseInt(calorieStr);
+                    } catch (NumberFormatException e) {
+                        // 문자열을 정수로 변환할 수 없는 경우 예외 처리
+                        log.error("Failed to parse calorie value: {}", calorieStr);
+                        calorie = 0; // 기본값 설정 또는 적절한 예외 처리
+                    }
+                }
+
+                // 데이터베이스에서 Ingredient 존재 여부 확인
+                Optional<Ingredient> existingIngredientOpt = ingredientRepository.findByName(name);
+                Ingredient ingredient;
+                if (existingIngredientOpt.isPresent()) {
+                    // 이미 존재하는 Ingredient 사용
+                    ingredient = existingIngredientOpt.get();
+                } else {
+                    // 새로운 Ingredient 객체 생성 및 저장
+                    ingredient = Ingredient.builder()
+                            .name(name)
+                            .calorie(calorie)
+                            .build();
+                    ingredient = ingredientRepository.save(ingredient);
+                }
+
+                // API에서 불러온 칼로리를 포함한 IngredientDto 반환
+                return IngredientResponseDTO.IngredientDto.builder()
+                        .name(ingredient.getName())
+                        .calorie(ingredient.getCalorie())
+                        .build();
+            }
+
+            // 유효한 데이터를 찾지 못했을 경우 예외 발생
+            throw new GeneralException(ErrorStatus.INGREDIENT_NOT_FOUND, "No valid items found in API response.");
+
+        } catch (IOException e) {
+            // 예외 처리 (I/O 오류 등)
+            throw new GeneralException(ErrorStatus.API_CALL_ERROR, "Error occurred while calling the API.", e);
+        } catch (URISyntaxException e) {
+            // URI 생성 오류 처리
+            throw new GeneralException(ErrorStatus.API_CALL_ERROR, "Error occurred while creating the API URI.", e);
+        }
     }
 }

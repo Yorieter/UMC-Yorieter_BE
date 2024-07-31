@@ -4,6 +4,7 @@ package umc.yorieter.service.RecipeService;
 import org.springframework.web.multipart.MultipartFile;
 import umc.yorieter.web.dto.request.RecipeRequestDTO;
 import umc.yorieter.web.dto.response.RecipeResponseDTO;
+import umc.yorieter.web.dto.response.IngredientResponseDTO;
 
 public interface RecipeService {
 
@@ -27,4 +28,6 @@ public interface RecipeService {
 
     // 레시피 좋아요 해제
     void deleteLike(Long recipeId);
+
+    IngredientResponseDTO.IngredientDto searchIngredient(String name, Long recipeId);
 }
