@@ -9,6 +9,7 @@ import umc.yorieter.domain.mapping.RecipeLike;
 import umc.yorieter.domain.mapping.Recipe_Ingredient;
 import umc.yorieter.web.dto.request.RecipeRequestDTO;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,9 +69,7 @@ public class Recipe extends BaseEntity {
         return this;
     }
 
-
-
-
-
-
+    public void updateCalories(int calories) {
+        if(calories != 0) this.calories = calories;
+    }
 }

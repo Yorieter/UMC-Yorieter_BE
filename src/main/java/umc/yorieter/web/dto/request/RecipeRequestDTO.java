@@ -15,7 +15,6 @@ public class RecipeRequestDTO {
 
         private String title;
         private String description;
-        private Integer calories;
         private List<String> ingredientNames; // 식재료 리스트 추가
 
     }
