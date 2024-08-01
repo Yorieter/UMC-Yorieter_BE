@@ -9,7 +9,6 @@ import umc.yorieter.domain.mapping.RecipeLike;
 import umc.yorieter.domain.mapping.Recipe_Ingredient;
 import umc.yorieter.web.dto.request.RecipeRequestDTO;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class Recipe extends BaseEntity {
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<RecipeLike> recipeLikeList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recipe_Ingredient> recipeIngredientList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,7 +63,6 @@ public class Recipe extends BaseEntity {
         if (updateRecipeDTO.getTitle() != null) this.title = updateRecipeDTO.getTitle();
         if (updateRecipeDTO.getDescription() != null) this.description = updateRecipeDTO.getDescription();
         if (updateRecipeDTO.getCalories() != null) this.calories = updateRecipeDTO.getCalories();
-//        if (updateRecipeDTO.getIngredientList() != null) this.recipeIngredientList = updateRecipeDTO.getIngredientList();
 
         return this;
     }
