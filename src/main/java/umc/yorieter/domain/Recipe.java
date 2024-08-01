@@ -64,7 +64,7 @@ public class Recipe extends BaseEntity {
         if (updateRecipeDTO.getTitle() != null) this.title = updateRecipeDTO.getTitle();
         if (updateRecipeDTO.getDescription() != null) this.description = updateRecipeDTO.getDescription();
         if (updateRecipeDTO.getCalories() != null) this.calories = updateRecipeDTO.getCalories();
-        if (updateRecipeDTO.getIngredientNames() != null) this.calories = updateRecipeDTO.getCalories();
+//        if (updateRecipeDTO.getIngredientList() != null) this.recipeIngredientList = updateRecipeDTO.getIngredientList();
 
         return this;
     }

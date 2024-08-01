@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import umc.yorieter.payload.ApiResponse;
 import umc.yorieter.service.MemberService.MemberService;
-import umc.yorieter.web.dto.request.MemberRequestDto;
+import umc.yorieter.web.dto.request.MemberRequestDTO;
 import umc.yorieter.web.dto.response.MemberResponseDTO;
 
 
@@ -30,7 +30,7 @@ public class MemberController {
     public ApiResponse<MemberResponseDTO.MemberDetailDto> updateMember(
             @PathVariable Long memberId,
             @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "request", required = false) @Valid MemberRequestDto.MemberUpdateDto request) {
+            @RequestPart(value = "request", required = false) @Valid MemberRequestDTO.MemberUpdateDto request) {
         return ApiResponse.onSuccess(memberService.updateMember(memberId, image, request));
     }
 }

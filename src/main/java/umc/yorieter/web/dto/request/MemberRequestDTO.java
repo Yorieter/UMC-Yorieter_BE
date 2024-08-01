@@ -2,7 +2,7 @@ package umc.yorieter.web.dto.request;
 
 import lombok.Getter;
 
-public class MemberRequestDto {
+public class MemberRequestDTO {
 
     @Getter
     public static class MemberUpdateDto {

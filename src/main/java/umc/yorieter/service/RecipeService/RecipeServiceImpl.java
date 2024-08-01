@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,9 @@ public class RecipeServiceImpl implements RecipeService {
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
     RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${api.service.key}")
+    private String serviceKey;
 
     // 레시피 & 식재료 함께 조회 (JPQL 메소드)
     public Recipe getRecipeWithIngredients(Long recipeId) {
@@ -86,10 +90,10 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe savedRecipe = recipeRepository.save(recipe);
 
         // 식재료 추가 및 저장
-        List<Recipe_Ingredient> recipeIngredientList = createRecipeDTO.getIngredientNames().stream()
-                .map(ingredientName -> {
+        List<Recipe_Ingredient> recipeIngredientList = createRecipeDTO.getIngredientList().stream()
+                .map(ingredientRequestDTO -> {
                     // searchIngredient 호출하여 IngredientDto 객체 반환
-                    IngredientResponseDTO.IngredientDto ingredientDto = searchIngredient(ingredientName, savedRecipe.getId());
+                    IngredientResponseDTO.IngredientDto ingredientDto = searchIngredient(ingredientRequestDTO.getName(), savedRecipe.getId());
 
                     // Ingredient 객체 검색 (중복 방지)
                     Ingredient ingredient = ingredientRepository.findByName(ingredientDto.getName())
@@ -99,6 +103,7 @@ public class RecipeServiceImpl implements RecipeService {
                     Recipe_Ingredient recipeIngredient = Recipe_Ingredient.builder()
                             .recipe(savedRecipe)
                             .ingredient(ingredient)
+                            .quantity(ingredientRequestDTO.getQuantity()) // 무게(양) 설정
                             .build();
 
                     // 중복 체크: 동일한 Recipe와 Ingredient의 조합이 이미 존재하는지 확인
@@ -112,10 +117,7 @@ public class RecipeServiceImpl implements RecipeService {
                 })
                 .collect(Collectors.toList());
 
-        // 총 칼로리 합산
-        int totalCalories = recipeIngredientList.stream()
-                .mapToInt(recipeIngredient -> recipeIngredient.getIngredient().getCalorie() != null ? recipeIngredient.getIngredient().getCalorie() : 0)
-                .sum();
+        int totalCalories = calculateTotalCalories(recipeIngredientList);
 
         // 레시피 칼로리 업데이트
         savedRecipe.updateCalories(totalCalories);
@@ -134,10 +136,31 @@ public class RecipeServiceImpl implements RecipeService {
                 .calories(totalCalories)
                 .imageUrl(savedRecipe.getRecipeImage() != null ? savedRecipe.getRecipeImage().getUrl() : null)
                 .ingredientNames(ingredientNames)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
+    // 총칼로리 계산
+    private int calculateTotalCalories(List<Recipe_Ingredient> recipeIngredientList) {
+        return recipeIngredientList.stream()
+                .mapToInt(recipeIngredient -> {
 
+                    // 100g 칼로리 -> 무게 비율로 변경
+                    Integer caloriePer100g = recipeIngredient.getIngredient().getCalorie();
+                    Integer quantity = recipeIngredient.getQuantity();
+
+                    if (caloriePer100g == null || quantity == null) {
+                        return 0;
+                    }
+
+                    log.info("kcal 100g: {}", caloriePer100g);
+                    log.info("quantity: {}", quantity);
+                    log.info("result: {}", (caloriePer100g * (quantity / 100.0)));
+
+                    return (int) (caloriePer100g * (quantity / 100.0));
+                })
+                .sum();
+    }
 
     // 레시피 전체 조회 (생성시간순 정렬) 추후 좋아요순으로 변경 필요
     @Override
@@ -305,9 +328,6 @@ public class RecipeServiceImpl implements RecipeService {
 
     }
 
-    @Value("${api.service.key}")
-    private String serviceKey;
-
     @Override
     public IngredientResponseDTO.IngredientDto searchIngredient(String name, Long recipeId) {
         String url = "https://apis.data.go.kr/1471000/FoodNtrCpntDbInfo/getFoodNtrCpntDbInq";
@@ -318,7 +338,7 @@ public class RecipeServiceImpl implements RecipeService {
             String encodedServiceKey = URLEncoder.encode(serviceKey, StandardCharsets.UTF_8.toString());
 
             // 쿼리 파라미터 생성
-            String query = String.format("serviceKey=%s&pageNo=1&numOfRows=10&type=json&FOOD_NM_KR=%s",
+            String query = String.format("serviceKey=%s&pageNo=1&numOfRows=5&type=json&FOOD_NM_KR=%s",
                     encodedServiceKey, encodedName);
 
             // URI 객체 생성
@@ -348,13 +368,10 @@ public class RecipeServiceImpl implements RecipeService {
                     try {
                         calorie = Integer.parseInt(calorieStr);
                     } catch (NumberFormatException e) {
-                        // 문자열을 정수로 변환할 수 없는 경우 예외 처리
-                        log.error("Failed to parse calorie value: {}", calorieStr);
                         calorie = 0; // 기본값 설정 또는 적절한 예외 처리
                     }
                 }
 
-                // 데이터베이스에서 Ingredient 존재 여부 확인
                 Optional<Ingredient> existingIngredientOpt = ingredientRepository.findByName(name);
                 Ingredient ingredient;
                 if (existingIngredientOpt.isPresent()) {
@@ -375,16 +392,12 @@ public class RecipeServiceImpl implements RecipeService {
                         .calorie(ingredient.getCalorie())
                         .build();
             }
-
-            // 유효한 데이터를 찾지 못했을 경우 예외 발생
-            throw new GeneralException(ErrorStatus.INGREDIENT_NOT_FOUND, "No valid items found in API response.");
+            throw new GeneralException(ErrorStatus.INGREDIENT_NOT_FOUND);
 
         } catch (IOException e) {
-            // 예외 처리 (I/O 오류 등)
-            throw new GeneralException(ErrorStatus.API_CALL_ERROR, "Error occurred while calling the API.", e);
+            throw new GeneralException(ErrorStatus.API_CALL_ERROR);
         } catch (URISyntaxException e) {
-            // URI 생성 오류 처리
-            throw new GeneralException(ErrorStatus.API_CALL_ERROR, "Error occurred while creating the API URI.", e);
+            throw new GeneralException(ErrorStatus.API_CALL_ERROR);
         }
     }
 }
