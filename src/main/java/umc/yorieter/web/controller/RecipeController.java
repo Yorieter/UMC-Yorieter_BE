@@ -81,10 +81,4 @@ public class RecipeController {
 
         return new ApiResponse<>(true, "COMMON204", "레시피 좋아요를 해제했습니다.",null);
     }
-
-//    @Operation(summary = "칼로리 검색")
-//    @GetMapping("/ingredient/search")
-//    public ApiResponse<IngredientResponseDTO.IngredientDto> searchIngredient(@RequestParam String name) {
-//        return ApiResponse.onSuccess(recipeService.searchIngredient(name));
-//    }
 }
