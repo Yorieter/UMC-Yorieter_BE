@@ -1,7 +1,7 @@
 package umc.yorieter.service.MemberService;
 
 import org.springframework.web.multipart.MultipartFile;
-import umc.yorieter.web.dto.request.MemberRequestDto.MemberUpdateDto;
+import umc.yorieter.web.dto.request.MemberRequestDTO.MemberUpdateDto;
 import umc.yorieter.web.dto.response.MemberResponseDTO;
 
 public interface MemberService {

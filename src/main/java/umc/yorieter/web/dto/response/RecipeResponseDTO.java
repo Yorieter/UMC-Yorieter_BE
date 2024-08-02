@@ -5,8 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import java.time.LocalDate;
+
 
 public class RecipeResponseDTO {
 
@@ -17,15 +20,23 @@ public class RecipeResponseDTO {
     public static class DetailRecipeDTO {
 
         private Long memberId;
+        private Long recipeId;
         private String title;
         private String description;
         private Integer calories;
-        // private String imageUrl; <- RecipeImage도 사용 (이거 S3필요하니까 킵)
-        // private List recipeIngredientList; <- 식재료 넣는건데, 킵
-        // private List recipeLikeList; <- 이것도 킵
-        // private List commentList; <- 이것도 킵
+        private String imageUrl;
+        private List<String> ingredientNames; // 식재료 리스트 추가
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AllRecipeListDto {
+        List<DetailRecipeDTO> recipeList;
+    }
 
     @Builder
     @Getter

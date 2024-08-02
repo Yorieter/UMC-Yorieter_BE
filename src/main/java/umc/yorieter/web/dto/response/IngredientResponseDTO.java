@@ -5,14 +5,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class RecipeImageResponseDto {
+@Getter
+@NoArgsConstructor
+public class IngredientResponseDTO {
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RecipeImageDto {
-        String url;
-        Long recipeId;
+    public static class IngredientDto {
+        private String name;
+        private Integer calorie;
     }
 }

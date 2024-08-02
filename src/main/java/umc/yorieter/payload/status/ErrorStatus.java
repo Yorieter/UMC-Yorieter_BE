@@ -19,9 +19,19 @@ public enum ErrorStatus implements BaseErrorCode {
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON5000",  "Internal error"),
     DATA_ACCESS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON5001",  "Data access error"),
 
+    // Token Error
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST,"TOKEN4000", "Invalid token"),
+
+    // Member_Error
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4000", "MEMBER not found"),
+    USERNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4001", "USERNAME already exists"),
+    NO_EDIT_DELETE_PERMISSION(HttpStatus.BAD_REQUEST, "MEMBER4002", "수정/삭제의 권한이 없습니다."),
 
     // 멤버 관련 응답
     MEMBER_NOT_EXIST_ERROR(HttpStatus.resolve(400),"MEMBER400","존재하지 않는 회원입니다."),
+
+    // Security Error
+    NOT_FOUND_CONTEXT(HttpStatus.NOT_FOUND,"Security4000", "SecurityContext not found"),
 
     // 레시피 관련 응답
     RECIPE_NOT_EXIST_ERROR(HttpStatus.resolve(400),"RECIPE400","존재하지 않는 레시피입니다."),
@@ -29,19 +39,14 @@ public enum ErrorStatus implements BaseErrorCode {
     RECIPE_LIKE_ALREADY_ERROR(HttpStatus.resolve(400),"RECIPE409","이미 좋아요 한 레시피입니다."),
     RECIPELIKE_NOT_EXIST_ERROR(HttpStatus.resolve(400),"RECIPELIKE400","좋아요 한 레시피가 아닙니다."),
 
+    //칼로리 검색
+    INGREDIENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "INGREDIENT4000", "검색 결과가 없습니다."),
+    API_CALL_ERROR(HttpStatus.BAD_REQUEST, "INGREDIENT40001", "OpenAPI ServerError"),
 
     // Page Error
-    INVALID_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "PAGE_4001", "올바르지 않은 페이징 번호입니다."),
+    INVALID_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "PAGE_4001", "올바르지 않은 페이징 번호입니다.");
 
-    // Token Error
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST,"TOKEN4000", "Invalid token"),
 
-    // Member_Error
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4000", "MEMBER not found"),
-    USERNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4001", "USERNAME already exists"),
-
-    // Security Error
-    NOT_FOUND_CONTEXT(HttpStatus.NOT_FOUND,"Security4000", "SecurityContext not found");
 
 
     private final HttpStatus httpStatus;
@@ -58,19 +63,19 @@ public enum ErrorStatus implements BaseErrorCode {
     @Override
     public ErrorReasonDto getReason() {
         return ErrorReasonDto.builder()
-            .message(message)
-            .code(code)
-            .isSuccess(false)
-            .build();
+                .message(message)
+                .code(code)
+                .isSuccess(false)
+                .build();
     }
 
     @Override
     public ErrorReasonDto getReasonHttpStatus() {
         return ErrorReasonDto.builder()
-            .message(message)
-            .code(code)
-            .isSuccess(false)
-            .httpStatus(httpStatus)
-            .build();
+                .message(message)
+                .code(code)
+                .isSuccess(false)
+                .httpStatus(httpStatus)
+                .build();
     }
 }
