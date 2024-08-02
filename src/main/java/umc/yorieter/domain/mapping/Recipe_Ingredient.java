@@ -26,5 +26,5 @@ public class Recipe_Ingredient extends BaseEntity {
     @JoinColumn(name = "ingredient_id")
     private Ingredient ingredient;
 
-
+    private Integer quantity;
 }

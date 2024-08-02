@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import umc.yorieter.payload.ApiResponse;
 import umc.yorieter.service.RecipeService.RecipeService;
 import umc.yorieter.web.dto.request.RecipeRequestDTO;
+import umc.yorieter.web.dto.response.IngredientResponseDTO;
 import umc.yorieter.web.dto.response.RecipeResponseDTO;
 
 @RestController
@@ -80,11 +81,4 @@ public class RecipeController {
 
         return new ApiResponse<>(true, "COMMON204", "레시피 좋아요를 해제했습니다.",null);
     }
-
-
-
-
-
-
-
 }

@@ -15,11 +15,8 @@ public class RecipeRequestDTO {
 
         private String title;
         private String description;
-        private Integer calories;
-        private List<String> ingredientNames; // 식재료 리스트 추가
-
+        private List<IngredientRequestDTO.IngredientAndQuantityDTO> ingredientList; // 식재료 리스트 추가
     }
-
 
     @Builder
     @Getter
@@ -30,7 +27,6 @@ public class RecipeRequestDTO {
         private String title;
         private String description;
         private Integer calories;
-        private List<String> ingredientNames; // 식재료 리스트 추가
-
+        private List<IngredientRequestDTO.IngredientAndQuantityDTO> ingredientList; // 식재료 리스트 추가
     }
 }

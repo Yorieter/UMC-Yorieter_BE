@@ -13,7 +13,7 @@ import umc.yorieter.payload.exception.GeneralException;
 import umc.yorieter.payload.status.ErrorStatus;
 import umc.yorieter.repository.MemberRepository;
 import umc.yorieter.service.ImageUploadService.ImageUploadService;
-import umc.yorieter.web.dto.request.MemberRequestDto;
+import umc.yorieter.web.dto.request.MemberRequestDTO;
 import umc.yorieter.web.dto.response.MemberResponseDTO;
 
 import java.util.Optional;
@@ -43,7 +43,7 @@ public class MemberServiceImpl implements MemberService {
 
     //회원정보 수정
     @Override
-    public MemberResponseDTO.MemberDetailDto updateMember(Long memberId, MultipartFile image, MemberRequestDto.MemberUpdateDto memberUpdateDto) {
+    public MemberResponseDTO.MemberDetailDto updateMember(Long memberId, MultipartFile image, MemberRequestDTO.MemberUpdateDto memberUpdateDto) {
         Long loginMemberId = SecurityUtil.getCurrentMemberId();
 
         // 현재 로그인된 사용자와 수정하려는 사용자가 같은지 확인

@@ -24,6 +24,7 @@ public class RecipeResponseDTO {
         private String imageUrl;
         private List<String> ingredientNames; // 식재료 리스트 추가
         private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
     @Builder
@@ -32,6 +33,5 @@ public class RecipeResponseDTO {
     @NoArgsConstructor
     public static class AllRecipeListDto {
         List<DetailRecipeDTO> recipeList;
-        private LocalDateTime createdAt;
     }
 }
