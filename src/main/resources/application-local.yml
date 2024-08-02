@@ -23,5 +23,3 @@ spring:
     url: ${LDB_URL} #로컬DB url
     username: ${LDB_USER} #로컬DB username
     password: ${LDB_PASSWORD} #로컬DB password
-
-

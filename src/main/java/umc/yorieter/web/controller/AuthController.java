@@ -49,4 +49,7 @@ public class AuthController {
     public ApiResponse logout() {  // 로그아웃 시
         return ApiResponse.onSuccess(null);
     }
+
+
+
 }

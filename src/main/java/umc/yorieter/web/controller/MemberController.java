@@ -60,7 +60,7 @@ public class MemberController {
 
     // 내가 작성한 게시물 조회
     @GetMapping("{memberId}/recipes")
-    @Operation(summary = "내가 진행중인 레시피 목록 조회 API", description = "특정 유저가 작성한 레시피들의 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
+    @Operation(summary = "내가 작성한 레시피 목록 조회 API", description = "특정 유저가 작성한 레시피들의 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
     public ApiResponse<MemberResponseDTO.RecipePreViewListDTO> getRecipeListByMember(
             @ExistMember @PathVariable(name = "memberId") Long memberId,
             @CheckPage @RequestParam(name = "page") Integer page) {
