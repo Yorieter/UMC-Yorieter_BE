@@ -43,12 +43,6 @@ public enum ErrorStatus implements BaseErrorCode {
     RECIPELIKE_NOT_EXIST_ERROR(HttpStatus.resolve(400),"RECIPELIKE400","좋아요 한 레시피가 아닙니다.");
 
 
-
-
-
-
-
-
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

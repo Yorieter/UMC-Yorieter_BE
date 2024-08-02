@@ -86,5 +86,10 @@ public class CommentServiceImpl implements CommentService{
 
         return commentConverter.toCommentResponseDTO(savedComment);
     }
-
+    @Override
+    public Long getCommentOwnerId(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid comment ID: " + commentId));
+        return comment.getMember().getId();
+    }
 }

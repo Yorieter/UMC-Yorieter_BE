@@ -10,4 +10,6 @@ public interface CommentService {
     List<CommentResponseDTO> getCommentsByRecipeId (Long recipeId);
     void deleteComment (Long recipeId);
     CommentResponseDTO createReply(Long parentCommentId, CommentRequestDTO commentRequestDTO);
+    Long getCommentOwnerId(Long commentId); // 새 메서드 추가
+
 }
