@@ -20,4 +20,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
 
     Page<Recipe> findAllByMember(Member member, PageRequest pageRequest);
+
+    List<Recipe> findByIdIn(List<Long> recipeIds);
+
 }
