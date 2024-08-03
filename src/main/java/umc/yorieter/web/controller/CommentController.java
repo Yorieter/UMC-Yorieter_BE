@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("/recipes/{recipeId}/comments")
 public class CommentController {
     private final CommentService commentService;
 
@@ -35,7 +34,13 @@ public class CommentController {
 
     @DeleteMapping("/recipes/{recipeId}/comments/{commentId}")
     @Operation(summary = "댓글 삭제 API")
-    public ApiResponse<String> deleteComment(@PathVariable Long recipeId, @PathVariable Long commentId) {
+    public ApiResponse<String> deleteComment(@RequestParam Long memberId, @PathVariable Long recipeId, @PathVariable Long commentId) {
+        Long commentOwnerId = commentService.getCommentOwnerId(commentId);
+
+        if (!memberId.equals(commentOwnerId)) {
+            return new ApiResponse<>(false, "COMMENT4001", "본인만 댓글을 삭제할 수 있습니다.", null);
+        }
+
         commentService.deleteComment(commentId);
         return new ApiResponse<>(true, "COMMENT200", "댓글 삭제에 성공하였습니다.", null);
     }
@@ -48,16 +53,8 @@ public class CommentController {
             @PathVariable Long commentId) {
 
         commentRequestDTO.setRecipeId(recipeId);
-        try {
-            CommentResponseDTO commentResponseDTO = commentService.createReply(commentId, commentRequestDTO);
+        CommentResponseDTO commentResponseDTO = commentService.createReply(commentId, commentRequestDTO);
 
-            return new ApiResponse<>(true, "COMMENT200", "대댓글 작성에 성공하였습니다.", commentResponseDTO);
-        } catch (IllegalArgumentException e) {
-            return new ApiResponse<>(false, "COMMENT400", e.getMessage(), null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ApiResponse<>(false, "COMMENT500", "대댓글 작성에 실패했습니다.", null);
-        }
+        return new ApiResponse<>(true, "COMMENT200", "대댓글 작성에 성공하였습니다.", commentResponseDTO);
     }
 }
-
