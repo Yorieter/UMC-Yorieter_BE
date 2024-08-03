@@ -27,4 +27,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findAllWithIngredientsSortedByLikes();
 
     Page<Recipe> findAllByMember(Member member, PageRequest pageRequest);
+
+    List<Recipe> findByIdIn(List<Long> recipeIds);
+
 }
