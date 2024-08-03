@@ -8,7 +8,6 @@ import umc.yorieter.converter.CommentConverter;
 import umc.yorieter.domain.Comment;
 import umc.yorieter.domain.Member;
 import umc.yorieter.domain.Recipe;
-import umc.yorieter.domain.RecipeImage;
 import umc.yorieter.repository.CommentRepository;
 import umc.yorieter.repository.MemberRepository;
 import umc.yorieter.repository.RecipeRepository;

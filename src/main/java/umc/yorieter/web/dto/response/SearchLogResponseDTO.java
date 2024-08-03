@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import umc.yorieter.domain.Member;
 import umc.yorieter.domain.SearchLog;
 
 import java.time.LocalDateTime;

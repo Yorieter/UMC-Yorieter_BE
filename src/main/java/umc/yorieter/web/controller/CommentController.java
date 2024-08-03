@@ -2,7 +2,6 @@ package umc.yorieter.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import umc.yorieter.payload.ApiResponse;
 import umc.yorieter.service.CommentService.CommentService;
