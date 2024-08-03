@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import java.time.LocalDate;
+
+
 public class RecipeResponseDTO {
 
     @Builder
@@ -33,5 +36,28 @@ public class RecipeResponseDTO {
     @NoArgsConstructor
     public static class AllRecipeListDto {
         List<DetailRecipeDTO> recipeList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentPreViewListDTO{
+        List<CommentPreViewDTO> commentList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentPreViewDTO{
+        String username;
+        String content;
+        LocalDate createdAt;
     }
 }

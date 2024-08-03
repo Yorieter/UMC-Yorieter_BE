@@ -41,7 +41,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //칼로리 검색
     INGREDIENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "INGREDIENT4000", "검색 결과가 없습니다."),
-    API_CALL_ERROR(HttpStatus.BAD_REQUEST, "INGREDIENT40001", "OpenAPI ServerError");
+    API_CALL_ERROR(HttpStatus.BAD_REQUEST, "INGREDIENT40001", "OpenAPI ServerError"),
+
+    // Page Error
+    INVALID_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "PAGE_4001", "올바르지 않은 페이징 번호입니다.");
+
+
+
 
     private final HttpStatus httpStatus;
     private final String code;
