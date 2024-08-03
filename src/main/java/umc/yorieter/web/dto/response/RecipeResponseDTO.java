@@ -30,6 +30,7 @@ public class RecipeResponseDTO {
         private LocalDateTime updatedAt;
     }
 
+
     @Builder
     @Getter
     @AllArgsConstructor
