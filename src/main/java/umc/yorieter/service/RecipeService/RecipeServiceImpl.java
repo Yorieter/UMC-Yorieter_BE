@@ -32,9 +32,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,8 +119,12 @@ public class RecipeServiceImpl implements RecipeService {
     // 레시피 전체 조회 (생성시간순 정렬) 추후 좋아요순으로 변경 필요
     @Override
     public RecipeResponseDTO.AllRecipeListDto getAllRecipes() {
-        // 레시피 & 식재료 함께 조회
-        List<Recipe> recipes = recipeRepository.findAllWithIngredients();
+        //원래 레시피 & 식재료 함께 조회 ★★★ 및 좋아요 수 계산
+        //List<Recipe> recipes = recipeRepository.findAllWithIngredients(); // 기존 레시피 조회
+
+        // 시도... findAllWithIngredientsSortedByLikes
+        List<Recipe> recipes = recipeRepository.findAllWithIngredientsSortedByLikes();
+
         List<RecipeResponseDTO.DetailRecipeDTO> detailRecipeDTOs = recipes.stream()
                 .map(recipe -> {
                     // 식재료 리스트 가져오기
