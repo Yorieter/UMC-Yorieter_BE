@@ -8,7 +8,6 @@ import umc.yorieter.converter.CommentConverter;
 import umc.yorieter.domain.Comment;
 import umc.yorieter.domain.Member;
 import umc.yorieter.domain.Recipe;
-import umc.yorieter.domain.RecipeImage;
 import umc.yorieter.repository.CommentRepository;
 import umc.yorieter.repository.MemberRepository;
 import umc.yorieter.repository.RecipeRepository;
@@ -41,7 +40,6 @@ public class CommentServiceImpl implements CommentService{
         Comment comment = commentConverter.toCommentEntity(commentRequestDTO, recipe, member, null);
         Comment savedComment = commentRepository.save(comment);
 
-        // 저장된 댓글을 DTO로 변환하여 반환합니다.
         return commentConverter.toCommentResponseDTO(savedComment);
     }
 
@@ -51,10 +49,9 @@ public class CommentServiceImpl implements CommentService{
         recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RuntimeException("Recipe not found with ID: " + recipeId));
 
-        // 댓글을 조회
+        //댓글 조회
         List<Comment> comments = commentRepository.findByRecipeId(recipeId);
 
-        // 댓글을 DTO로 변환
         return comments.stream()
                 .map(CommentResponseDTO::fromComment)
                 .collect(Collectors.toList());
@@ -69,6 +66,7 @@ public class CommentServiceImpl implements CommentService{
         commentRepository.delete(comment);
     }
 
+    //대댓글 구현
     @Override
     @Transactional
     public CommentResponseDTO createReply(Long parentCommentId, CommentRequestDTO commentRequestDTO) {
@@ -87,4 +85,10 @@ public class CommentServiceImpl implements CommentService{
         return commentConverter.toCommentResponseDTO(savedComment);
     }
 
+    @Override
+    public Long getCommentOwnerId(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid comment ID: " + commentId));
+        return comment.getMember().getId();
+    }
 }
