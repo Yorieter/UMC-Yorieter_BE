@@ -1,5 +1,6 @@
 package umc.yorieter.service.SearchService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,7 @@ public class SearchServiceImpl implements SearchService {
     private final IngredientRepository ingredientRepository;
 
 
+    @Transactional
     @Override
     public SearchResponseDTO.AllRecipeListDto getAllRecipes(SearchRequestDTO.SearchRecipeDTO searchRequestDTO) {
         Integer maxCalorie = searchRequestDTO.getMaxCalorie();
@@ -69,17 +71,24 @@ public class SearchServiceImpl implements SearchService {
 
         // DTO 변환
         List<SearchResponseDTO.DetailRecipeDTO> detailRecipeDTOS = filteredRecipes.stream()
-                .map(recipe -> SearchResponseDTO.DetailRecipeDTO.builder()
-                        .recipeId(recipe.getId())
-                        .memberId(recipe.getMember().getId())
-                        .title(recipe.getTitle())
-                        .description(recipe.getDescription())
-                        .calories(recipe.getCalories())
-                        .imageUrl(recipe.getRecipeImage().getUrl())
-                        .ingredientNames(ingredientNames)
-                        .createdAt(recipe.getCreatedAt())
-                        .updatedAt(recipe.getUpdatedAt())
-                        .build())
+                .map(recipe -> {
+                    // 식재료 리스트 가져오기
+                    List<String> recipeIngredientNames = recipe.getRecipeIngredientList().stream()
+                            .map(recipeIngredient -> recipeIngredient.getIngredient().getName()) // 각 재료의 이름을 추출
+                            .collect(Collectors.toList());
+
+                    return SearchResponseDTO.DetailRecipeDTO.builder()
+                            .recipeId(recipe.getId())
+                            .memberId(recipe.getMember().getId())
+                            .title(recipe.getTitle())
+                            .description(recipe.getDescription())
+                            .calories(recipe.getCalories())
+                            .imageUrl(recipe.getRecipeImage().getUrl())
+                            .ingredientNames(recipeIngredientNames) // 추출한 식재료 이름 리스트 사용
+                            .createdAt(recipe.getCreatedAt())
+                            .updatedAt(recipe.getUpdatedAt())
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         log.info("Detail Recipe DTOs Count: {}", detailRecipeDTOS.size());
