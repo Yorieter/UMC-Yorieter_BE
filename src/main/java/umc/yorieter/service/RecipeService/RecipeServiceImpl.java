@@ -269,14 +269,18 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public void addLike(Long recipeId) {
         Long memberId = SecurityUtil.getCurrentMemberId();
+        System.out.println("현재 회원 ID: " + memberId);
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_EXIST_ERROR));
 
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.RECIPE_NOT_EXIST_ERROR));
+        System.out.println("레시피 ID: " + recipeId);
+        System.out.println("레시피 작성자 ID: " + recipe.getMember().getId());
 
         // 내가 쓴 글 좋아요 못 누르게
-        if (recipe.getMember().equals(member)) {
+        if (recipe.getMember().getId().equals(memberId)) {
             throw new GeneralException(ErrorStatus.CANNOT_LIKE_OWN_RECIPE_ERROR);
         }
         // 이미 좋아요 눌러져 있는지 확인
