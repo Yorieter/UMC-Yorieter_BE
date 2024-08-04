@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import umc.yorieter.config.security.util.SecurityUtil;
 import umc.yorieter.converter.CommentConverter;
 import umc.yorieter.domain.Comment;
 import umc.yorieter.domain.Member;
 import umc.yorieter.domain.Recipe;
+import umc.yorieter.payload.exception.GeneralException;
+import umc.yorieter.payload.status.ErrorStatus;
 import umc.yorieter.repository.CommentRepository;
 import umc.yorieter.repository.MemberRepository;
 import umc.yorieter.repository.RecipeRepository;
@@ -30,11 +33,13 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     @Transactional
-    public CommentResponseDTO createComment(CommentRequestDTO commentRequestDTO) {
-        Recipe recipe = recipeRepository.findById(commentRequestDTO.getRecipeId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid recipe ID: " + commentRequestDTO.getRecipeId()));
-        Member member = memberRepository.findById(commentRequestDTO.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid member ID: " + commentRequestDTO.getMemberId()));
+    public CommentResponseDTO createComment(Long recipeId, CommentRequestDTO commentRequestDTO) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_EXIST_ERROR));
+
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found with ID: " + recipeId));
 
         // 부모 댓글이 없는 경우 처리
         Comment comment = commentConverter.toCommentEntity(commentRequestDTO, recipe, member, null);
@@ -60,24 +65,31 @@ public class CommentServiceImpl implements CommentService{
     @Override
     @Transactional
     public void deleteComment(Long commentId) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid comment ID: " + commentId));
 
+        //본인만 댓글 삭제할 수 있도록
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new GeneralException(ErrorStatus.NO_EDIT_DELETE_PERMISSION, "본인만 댓글을 삭제할 수 있습니다.");
+        }
         commentRepository.delete(comment);
     }
 
     //대댓글 구현
     @Override
     @Transactional
-    public CommentResponseDTO createReply(Long parentCommentId, CommentRequestDTO commentRequestDTO) {
+    public CommentResponseDTO createReply(Long parentCommentId, Long recipeId, CommentRequestDTO commentRequestDTO) {
         Comment parentComment = commentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid parent comment ID: " + parentCommentId));
 
-        Member member = memberRepository.findById(commentRequestDTO.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid member ID: " + commentRequestDTO.getMemberId()));
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_EXIST_ERROR));
 
-        Recipe recipe = recipeRepository.findById(commentRequestDTO.getRecipeId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid recipe ID: " + commentRequestDTO.getRecipeId()));
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid recipe ID: " + recipeId));
 
         Comment reply = commentConverter.toCommentEntity(commentRequestDTO, recipe, member, parentComment);
         Comment savedComment = commentRepository.save(reply);
