@@ -19,10 +19,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     // List<Recipe> findAllWithIngredients();
 
     @Query("SELECT r FROM Recipe r " +
-            "LEFT JOIN FETCH r.recipeIngredientList ri " +
-            "LEFT JOIN FETCH ri.ingredient " +
-            "LEFT JOIN FETCH RecipeLike rl ON r.id = rl.recipe.id " +
-            "GROUP BY r.id " +
+            "LEFT JOIN r.recipeIngredientList ri " +
+            "LEFT JOIN ri.ingredient i " +
+            "LEFT JOIN r.recipeLikeList rl " +
+            "GROUP BY r.id, r.calories, r.createdAt, r.description, r.member.id, r.title, r.updatedAt " +
             "ORDER BY COUNT(rl) DESC")
     List<Recipe> findAllWithIngredientsSortedByLikes();
 

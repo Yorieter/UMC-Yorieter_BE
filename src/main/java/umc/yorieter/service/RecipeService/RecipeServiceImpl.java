@@ -117,6 +117,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     // 레시피 전체 조회 (생성시간순 정렬) 추후 좋아요순으로 변경 필요
+    @Transactional
     @Override
     public RecipeResponseDTO.AllRecipeListDto getAllRecipes() {
         //원래 레시피 & 식재료 함께 조회 ★★★ 및 좋아요 수 계산
