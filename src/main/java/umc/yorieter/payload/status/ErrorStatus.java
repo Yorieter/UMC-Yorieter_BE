@@ -47,8 +47,6 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "PAGE_4001", "올바르지 않은 페이징 번호입니다.");
 
 
-
-
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

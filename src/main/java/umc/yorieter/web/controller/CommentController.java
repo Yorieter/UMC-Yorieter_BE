@@ -18,9 +18,7 @@ public class CommentController {
     @PostMapping("/recipes/{recipeId}/comments")
     @Operation(summary = "댓글 작성 API")
     public ApiResponse<CommentResponseDTO> createComment(@RequestBody CommentRequestDTO commentRequestDTO, @PathVariable Long recipeId) {
-        commentRequestDTO.setRecipeId(recipeId);
-
-        CommentResponseDTO commentResponseDTO = commentService.createComment(commentRequestDTO);
+        CommentResponseDTO commentResponseDTO = commentService.createComment(recipeId,commentRequestDTO);
         return new ApiResponse<>(true, "COMMENT200","댓글 작성에 성공하였습니다.",commentResponseDTO);
     }
 
@@ -33,16 +31,9 @@ public class CommentController {
 
     @DeleteMapping("/recipes/{recipeId}/comments/{commentId}")
     @Operation(summary = "댓글 삭제 API")
-    public ApiResponse<String> deleteComment(@RequestParam Long memberId, @PathVariable Long recipeId, @PathVariable Long commentId) {
-        Long commentOwnerId = commentService.getCommentOwnerId(commentId);
-
-        if (!memberId.equals(commentOwnerId)) {
-            return new ApiResponse<>(false, "COMMENT4001", "본인만 댓글을 삭제할 수 있습니다.", null);
-        }
-
+    public ApiResponse<String> deleteComment(@PathVariable Long recipeId, @PathVariable Long commentId) {
         commentService.deleteComment(commentId);
-        return new ApiResponse<>(true, "COMMENT200", "댓글 삭제에 성공하였습니다.", null);
-    }
+        return new ApiResponse<>(true, "COMMENT200", "댓글 삭제에 성공하였습니다.", null);    }
 
     @PostMapping("/recipes/{recipeId}/comments/{commentId}/replies")
     @Operation(summary = "대댓글 작성 API")
@@ -51,8 +42,7 @@ public class CommentController {
             @PathVariable Long recipeId,
             @PathVariable Long commentId) {
 
-        commentRequestDTO.setRecipeId(recipeId);
-        CommentResponseDTO commentResponseDTO = commentService.createReply(commentId, commentRequestDTO);
+        CommentResponseDTO commentResponseDTO = commentService.createReply(commentId,recipeId, commentRequestDTO);
 
         return new ApiResponse<>(true, "COMMENT200", "대댓글 작성에 성공하였습니다.", commentResponseDTO);
     }
