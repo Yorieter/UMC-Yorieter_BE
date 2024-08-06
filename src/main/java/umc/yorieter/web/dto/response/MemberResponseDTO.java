@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import umc.yorieter.domain.Member;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter

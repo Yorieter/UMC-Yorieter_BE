@@ -17,14 +17,12 @@ public class MemberSignupRequestDTO {
     String username;
     String password;
     String nickname;
-    String description;
 
     @Builder
-    public MemberSignupRequestDTO(String username, String password, String nickname, String description, Provider provider) {
+    public MemberSignupRequestDTO(String username, String password, String nickname) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
-        this.description = description;
     }
 
     public Member toEntity(PasswordEncoder passwordEncoder) {
@@ -36,7 +34,7 @@ public class MemberSignupRequestDTO {
                 .term1(CHECKED)
                 .term2(CHECKED)
                 .term3(CHECKED)
-                .description(description)
+                .description("")
                 .build();
     }
 }
