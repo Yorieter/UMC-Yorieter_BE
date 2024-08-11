@@ -13,6 +13,8 @@ public class TokenDTO {  // jwt Token ResponseDto (+ login username)
     private Long tokenExpiresIn;
 
     @Setter
+    private Long id;
+    @Setter
     private String username;
     @Setter
     private String nickname;
