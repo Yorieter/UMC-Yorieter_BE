@@ -38,6 +38,7 @@ public class AuthController {
 
         Member member = memberRepository.findByUsername(memberLoginRequestDto.getUsername()).orElseThrow(
                 () -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+        tokenDto.setId(member.getId());
         tokenDto.setUsername(member.getUsername());
         tokenDto.setNickname(member.getUsername());
 
