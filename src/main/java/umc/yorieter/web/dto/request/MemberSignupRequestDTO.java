@@ -34,7 +34,7 @@ public class MemberSignupRequestDTO {
                 .term1(CHECKED)
                 .term2(CHECKED)
                 .term3(CHECKED)
-                .description("")
+                .description("건강한 재료로 제한없이 먹고 싶은 것 모두 요리합니다 :)")
                 .build();
     }
 }

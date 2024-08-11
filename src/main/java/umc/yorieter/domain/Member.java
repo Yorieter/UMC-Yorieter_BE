@@ -44,7 +44,7 @@ public class Member extends BaseEntity {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
     private MemberProfile profile;
 
-    @Column(length = 20)
+    @Column
     private String description;
 
     @Enumerated(EnumType.ORDINAL)
