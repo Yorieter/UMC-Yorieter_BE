@@ -11,6 +11,9 @@ public interface RecipeService {
     // 레시피 작성
     RecipeResponseDTO.DetailRecipeDTO createRecipe(RecipeRequestDTO.CreateRecipeDTO createRecipeDTO, MultipartFile image);
 
+    // 레시피 작성 api 없이
+    RecipeResponseDTO.DetailRecipeDTO createRecipeWithoutAPI(RecipeRequestDTO.CreateRecipeDTO createRecipeDTO, MultipartFile image);
+
     // 레시피 전체 조회
     RecipeResponseDTO.AllRecipeListDto getAllRecipes();
 
@@ -19,6 +22,9 @@ public interface RecipeService {
 
     // 레시피 수정
     RecipeResponseDTO.DetailRecipeDTO updateRecipe(Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO, MultipartFile image);
+
+    // 레시피 수정 api 없이
+    RecipeResponseDTO.DetailRecipeDTO updateRecipeWithoutAPI(Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO, MultipartFile image);
 
     // 레시피 삭제
     void deleteRecipe(Long recipeId);

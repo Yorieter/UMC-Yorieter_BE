@@ -116,6 +116,63 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 
+    // 레시피 작성 api빼고
+    @Transactional
+    @Override
+    public RecipeResponseDTO.DetailRecipeDTO createRecipeWithoutAPI(RecipeRequestDTO.CreateRecipeDTO createRecipeDTO, MultipartFile image) {
+        // 회원 확인
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_EXIST_ERROR));
+
+        // 이미지 업로드 처리
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            imageUrl = imageUploadService.uploadImage(image);
+        }
+
+        // DTO에서 데이터 가져와 Recipe 객체 생성
+        Recipe recipe = Recipe.builder()
+                .member(member)
+                .title(createRecipeDTO.getTitle())
+                .description(createRecipeDTO.getDescription())
+                .recipeIngredientList(new ArrayList<>()) // 빈 리스트로 초기화
+                .build();
+
+        // 이미지 URL 설정
+        if (imageUrl != null) {
+            recipe.updateRecipeImageUrl(imageUrl); // 이미지 URL 업데이트
+        }
+
+        // Recipe 저장 (기본 정보를 먼저 저장)
+        Recipe savedRecipe = recipeRepository.save(recipe);
+
+        // 식재료 리스트 생성 및 저장
+        List<Recipe_Ingredient> recipeIngredientList = createIngredients(createRecipeDTO.getIngredientList(), savedRecipe);
+
+        // recipe 객체에 recipeIngredientList 추가
+        savedRecipe.getRecipeIngredientList().addAll(recipeIngredientList);
+
+        // 최종 Recipe 저장
+        savedRecipe = recipeRepository.save(savedRecipe);
+
+        // 응답 DTO 작성 및 반환
+        List<String> ingredientNames = recipeIngredientList.stream()
+                .map(recipeIngredient -> recipeIngredient.getIngredient().getName())
+                .collect(Collectors.toList());
+
+        return RecipeResponseDTO.DetailRecipeDTO.builder()
+                .recipeId(savedRecipe.getId())
+                .memberId(savedRecipe.getMember().getId())
+                .title(savedRecipe.getTitle())
+                .description(savedRecipe.getDescription())
+                .imageUrl(savedRecipe.getRecipeImage() != null ? savedRecipe.getRecipeImage().getUrl() : null)
+                .ingredientNames(ingredientNames)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
     // 레시피 전체 조회 (생성시간순 정렬) 추후 좋아요순으로 변경 필요
     @Transactional
     @Override
@@ -247,6 +304,79 @@ public class RecipeServiceImpl implements RecipeService {
                 .imageUrl(recipe.getRecipeImage() != null ? recipe.getRecipeImage().getUrl() : null)
                 .ingredientNames(ingredientNames)  // 식재료 리스트 추가
                 .createdAt(recipe.getCreatedAt())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    // 레시피 수정 api 빼고
+    @Transactional
+    @Override
+    public RecipeResponseDTO.DetailRecipeDTO updateRecipeWithoutAPI(Long recipeId, RecipeRequestDTO.UpdateRecipeDTO updateRecipeDTO, MultipartFile image) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+
+        // 레시피 & 식재료 함께 조회
+        Recipe recipe = getRecipeWithIngredients(recipeId);
+
+        if (recipe == null) {
+            throw new GeneralException(ErrorStatus.RECIPE_NOT_EXIST_ERROR);
+        }
+
+        // 작성자 본인만 수정 가능하도록
+        if (!recipe.getMember().getId().equals(memberId)) {
+            throw new GeneralException(ErrorStatus.NO_EDIT_DELETE_PERMISSION);
+        }
+
+        // updateRecipeDto 있는 경우
+        if (updateRecipeDTO != null) {
+            recipe.update(updateRecipeDTO);
+        }
+
+        // 이미지 있는 경우
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = imageUploadService.uploadImage(image);
+            recipe.updateRecipeImageUrl(imageUrl);
+        }
+
+        // 기존 식재료 삭제
+        recipeIngredientRepository.deleteAll(recipe.getRecipeIngredientList());
+        recipe.getRecipeIngredientList().clear();
+
+        // 새로운 식재료 리스트 추가
+        List<Recipe_Ingredient> recipeIngredientList = updateRecipeDTO.getIngredientList().stream()
+                .map(ingredientDTO -> {
+                    Ingredient ingredient = Ingredient.builder()
+                            .name(ingredientDTO.getName())
+                            .build();
+
+                    ingredient = ingredientRepository.save(ingredient);
+
+                    return Recipe_Ingredient.builder()
+                            .recipe(recipe)
+                            .ingredient(ingredient)
+                            .quantity(ingredientDTO.getQuantity())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // recipe 객체에 recipeIngredientList 추가
+        recipe.getRecipeIngredientList().addAll(recipeIngredientList);
+
+        // 레시피 저장
+        Recipe updatedRecipe = recipeRepository.save(recipe);
+
+        // 응답 DTO 작성 및 반환
+        List<String> ingredientNames = recipeIngredientList.stream()
+                .map(recipeIngredient -> recipeIngredient.getIngredient().getName())
+                .collect(Collectors.toList());
+
+        return RecipeResponseDTO.DetailRecipeDTO.builder()
+                .recipeId(updatedRecipe.getId())
+                .memberId(updatedRecipe.getMember().getId())
+                .title(updatedRecipe.getTitle())
+                .description(updatedRecipe.getDescription())
+                .imageUrl(updatedRecipe.getRecipeImage() != null ? updatedRecipe.getRecipeImage().getUrl() : null)
+                .ingredientNames(ingredientNames)
+                .createdAt(updatedRecipe.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
@@ -445,6 +575,32 @@ public class RecipeServiceImpl implements RecipeService {
                     if (!alreadyExists) {
                         recipeIngredientRepository.save(recipeIngredient);
                     }
+
+                    return recipeIngredient;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 3. 식재료 리스트를 단순 저장
+    private List<Recipe_Ingredient> createIngredients(List<IngredientRequestDTO.IngredientAndQuantityDTO> ingredientList, Recipe recipe) {
+        return ingredientList.stream()
+                .map(ingredientRequestDTO -> {
+                    // Ingredient 객체 생성
+                    Ingredient ingredient = Ingredient.builder()
+                            .name(ingredientRequestDTO.getName())
+                            .build();
+
+                    // Ingredient 저장
+                    ingredient = ingredientRepository.save(ingredient);
+
+                    // Recipe_Ingredient 객체 생성 및 저장
+                    Recipe_Ingredient recipeIngredient = Recipe_Ingredient.builder()
+                            .recipe(recipe)
+                            .ingredient(ingredient)
+                            .quantity(ingredientRequestDTO.getQuantity()) // 무게(양) 설정
+                            .build();
+
+                    recipeIngredientRepository.save(recipeIngredient);
 
                     return recipeIngredient;
                 })
