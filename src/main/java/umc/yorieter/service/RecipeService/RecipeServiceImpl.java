@@ -197,7 +197,7 @@ public class RecipeServiceImpl implements RecipeService {
                             .title(recipe.getTitle())
                             .description(recipe.getDescription())
                             .calories(recipe.getCalories())
-                            .imageUrl(recipe.getRecipeImage().getUrl())
+                            .imageUrl(recipe.getRecipeImage() != null ? recipe.getRecipeImage().getUrl() : null)
                             .ingredientNames(ingredientNames) // 식재료 리스트 추가
                             .createdAt(recipe.getCreatedAt())
                             .updatedAt(recipe.getUpdatedAt())
@@ -232,7 +232,7 @@ public class RecipeServiceImpl implements RecipeService {
                 .title(recipe.getTitle())
                 .description(recipe.getDescription())
                 .calories(recipe.getCalories())
-                .imageUrl(recipe.getRecipeImage().getUrl())
+                .imageUrl(recipe.getRecipeImage() != null ? recipe.getRecipeImage().getUrl() : null)
                 .ingredientNames(ingredientNames) // 식재료 리스트 추가
                 .createdAt(recipe.getCreatedAt())
                 .updatedAt(recipe.getUpdatedAt())
