@@ -25,7 +25,7 @@ public class RecipeController {
     @Operation(summary = "레시피 작성 API - 칼로리ver", description = "레시피를 작성합니다.")
     @PostMapping("/api")
     public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> create(@RequestPart(value = "request") RecipeRequestDTO.CreateRecipeDTO request,
-                                                                 @RequestPart(value = "image") MultipartFile image){
+                                                                 @RequestPart(value = "image", required = false) MultipartFile image){
         return ApiResponse.onSuccess(recipeService.createRecipe(request, image));
     }
 
@@ -33,7 +33,7 @@ public class RecipeController {
     @Operation(summary = "레시피 작성 API - 칼로리X ver", description = "레시피 칼로리API 빼고 작성 ver")
     @PostMapping("")
     public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> create2(@RequestPart(value = "request") RecipeRequestDTO.CreateRecipeDTO request,
-                                                                  @RequestPart(value = "image") MultipartFile image){
+                                                                  @RequestPart(value = "image", required = false) MultipartFile image){
         return ApiResponse.onSuccess(recipeService.createRecipeWithoutAPI(request, image));
     }
 
