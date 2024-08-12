@@ -22,11 +22,19 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     // 레시피 작성
-    @Operation(summary = "레시피 작성 API", description = "레시피를 작성합니다.")
-    @PostMapping("")
+    @Operation(summary = "레시피 작성 API - 칼로리ver", description = "레시피를 작성합니다.")
+    @PostMapping("/api")
     public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> create(@RequestPart(value = "request") RecipeRequestDTO.CreateRecipeDTO request,
                                                                  @RequestPart(value = "image") MultipartFile image){
         return ApiResponse.onSuccess(recipeService.createRecipe(request, image));
+    }
+
+    // 레시피 작성
+    @Operation(summary = "레시피 작성 API - 칼로리X ver", description = "레시피 칼로리API 빼고 작성 ver")
+    @PostMapping("")
+    public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> create2(@RequestPart(value = "request") RecipeRequestDTO.CreateRecipeDTO request,
+                                                                  @RequestPart(value = "image") MultipartFile image){
+        return ApiResponse.onSuccess(recipeService.createRecipeWithoutAPI(request, image));
     }
 
     // 모든레시피 조회 (생성일자순 정렬) 추후에 좋아요 순서로 변경 필요
@@ -45,11 +53,20 @@ public class RecipeController {
 
 
     // 레시피 수정
-    @Operation(summary = "레시피 수정 API", description = "레시피를 수정합니다.")
-    @PatchMapping("/{recipeId}")
+    @Operation(summary = "레시피 수정 API - 칼로리 ver", description = "레시피를 수정합니다.")
+    @PatchMapping("/api/{recipeId}")
     public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> updateRecipe(@PathVariable Long recipeId,
                                                                        @RequestPart(value = "request", required = false) RecipeRequestDTO.UpdateRecipeDTO request,
                                                                        @RequestPart(value = "image", required = false) MultipartFile image) {
+        return ApiResponse.onSuccess(recipeService.updateRecipe(recipeId, request, image));
+    }
+
+    // 레시피 수정
+    @Operation(summary = "레시피 수정 API - 칼로리X ver", description = "레시피 칼로리API 빼고 수정 ver")
+    @PatchMapping("/{recipeId}")
+    public ApiResponse<RecipeResponseDTO.DetailRecipeDTO> updateRecipe2(@PathVariable Long recipeId,
+                                                                        @RequestPart(value = "request", required = false) RecipeRequestDTO.UpdateRecipeDTO request,
+                                                                        @RequestPart(value = "image", required = false) MultipartFile image) {
         return ApiResponse.onSuccess(recipeService.updateRecipe(recipeId, request, image));
     }
 
