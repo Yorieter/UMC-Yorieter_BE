@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import umc.yorieter.domain.Ingredient;
-import umc.yorieter.domain.mapping.Recipe_Ingredient;
 import umc.yorieter.domain.Recipe;
 import umc.yorieter.repository.*;
 import umc.yorieter.web.dto.request.SearchRequestDTO;
@@ -99,4 +98,43 @@ public class SearchServiceImpl implements SearchService {
                 .build();
 
     }
+
+    @Override
+    @Transactional
+    public SearchResponseDTO.AllRecipeListDto searchByTitle(SearchRequestDTO.TitleSearchDTO titleSearchDTO) {
+        String title = titleSearchDTO.getTitle();
+
+        log.info("Title Search Request - Title: {}", title);
+
+        // 제목으로 레시피 검색
+        List<Recipe> recipes = recipeRepository.findByTitleContaining(title);
+
+        log.info("Found Recipes Count: {}", recipes.size());
+
+        // DTO 변환
+        List<SearchResponseDTO.DetailRecipeDTO> detailRecipeDTOS = recipes.stream()
+                .map(recipe -> {
+                    List<String> recipeIngredientNames = recipe.getRecipeIngredientList().stream()
+                            .map(recipeIngredient -> recipeIngredient.getIngredient().getName())
+                            .collect(Collectors.toList());
+
+                    return SearchResponseDTO.DetailRecipeDTO.builder()
+                            .recipeId(recipe.getId())
+                            .memberId(recipe.getMember().getId())
+                            .title(recipe.getTitle())
+                            .description(recipe.getDescription())
+                            .calories(recipe.getCalories())
+                            .imageUrl(recipe.getRecipeImage().getUrl())
+                            .ingredientNames(recipeIngredientNames)
+                            .createdAt(recipe.getCreatedAt())
+                            .updatedAt(recipe.getUpdatedAt())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return SearchResponseDTO.AllRecipeListDto.builder()
+                .recipeList(detailRecipeDTOS)
+                .build();
+    }
+
 }

@@ -19,4 +19,13 @@ public class SearchRequestDTO {
         private Integer minCalorie;
         private List<String> ingredientNames;
     }
+
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TitleSearchDTO {
+        private String title;
+    }
 }
