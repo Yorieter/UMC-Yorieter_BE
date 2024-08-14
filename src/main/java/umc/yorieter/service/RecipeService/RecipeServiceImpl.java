@@ -173,7 +173,7 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 
-    // 레시피 전체 조회 (생성시간순 정렬) 추후 좋아요순으로 변경 필요
+    // 레시피 전체 조회
     @Transactional
     @Override
     public RecipeResponseDTO.AllRecipeListDto getAllRecipes() {
