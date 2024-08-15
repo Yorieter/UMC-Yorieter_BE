@@ -55,6 +55,7 @@ public class MemberResponseDTO {
     @AllArgsConstructor
     public static class RecipePreViewDTO{
         String title;
+        Long recipeId;
         LocalDate createdAt;
     }
 
@@ -102,6 +103,7 @@ public class MemberResponseDTO {
     @AllArgsConstructor
     public static class RecipeLikePreViewDTO{
         String title;
+        Long recipeId;
         LocalDate createdAt;
     }
 }
