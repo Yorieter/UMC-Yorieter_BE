@@ -344,11 +344,20 @@ public class RecipeServiceImpl implements RecipeService {
         // 새로운 식재료 리스트 추가
         List<Recipe_Ingredient> recipeIngredientList = updateRecipeDTO.getIngredientList().stream()
                 .map(ingredientDTO -> {
-                    Ingredient ingredient = Ingredient.builder()
-                            .name(ingredientDTO.getName())
-                            .build();
+                    // Ingredient 객체 검색 (중복 방지)
+                    Optional<Ingredient> existingIngredient = ingredientRepository.findByName(ingredientDTO.getName());
 
-                    ingredient = ingredientRepository.save(ingredient);
+                    Ingredient ingredient;
+                    if (existingIngredient.isPresent()) {
+                        // 이미 존재하는 Ingredient 사용
+                        ingredient = existingIngredient.get();
+                    } else {
+                        // 존재하지 않을 경우 새로 생성하여 저장
+                        ingredient = Ingredient.builder()
+                                .name(ingredientDTO.getName())
+                                .build();
+                        ingredient = ingredientRepository.save(ingredient);
+                    }
 
                     return Recipe_Ingredient.builder()
                             .recipe(recipe)
