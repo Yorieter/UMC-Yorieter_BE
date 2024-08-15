@@ -46,6 +46,7 @@ public class MemberConverter {
     public static MemberResponseDTO.RecipePreViewDTO recipePreViewDTO(Recipe recipe) {
         return MemberResponseDTO.RecipePreViewDTO.builder()
                 .title(recipe.getTitle())
+                .recipeId(recipe.getId())
                 .createdAt(recipe.getCreatedAt().toLocalDate())
                 .build();
     }
@@ -87,9 +88,11 @@ public class MemberConverter {
                 .build();
     }
 
+
     public static MemberResponseDTO.RecipeLikePreViewDTO recipeLikePreViewDTO(RecipeLike recipeLike){
         return MemberResponseDTO.RecipeLikePreViewDTO.builder()
                 .title(recipeLike.getRecipe().getTitle())
+                .recipeId(recipeLike.getRecipe().getId())
                 .createdAt(recipeLike.getRecipe().getCreatedAt().toLocalDate())
                 .build();
     }
