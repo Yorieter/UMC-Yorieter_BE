@@ -39,7 +39,7 @@ public class SearchServiceImpl implements SearchService {
 
 
         // 1. 식재료 이름으로 ingredient_id 찾기
-       List<Long> ingredientIds = ingredientNames.stream()
+        List<Long> ingredientIds = ingredientNames.stream()
                 .map(ingredientName -> ingredientRepository.findByName(ingredientName)
                         .map(Ingredient::getId)
                         .orElse(null))
@@ -105,12 +105,10 @@ public class SearchServiceImpl implements SearchService {
     public SearchResponseDTO.AllRecipeListDto searchByTitle(SearchRequestDTO.TitleSearchDTO titleSearchDTO) {
         String title = titleSearchDTO.getTitle();
 
-        log.info("Title Search Request - Title: {}", title);
 
         // 제목으로 레시피 검색
         List<Recipe> recipes = recipeRepository.findByTitleContaining(title);
 
-        log.info("Found Recipes Count: {}", recipes.size());
 
         // DTO 변환
         List<SearchResponseDTO.DetailRecipeDTO> detailRecipeDTOS = recipes.stream()
