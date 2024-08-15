@@ -585,13 +585,15 @@ public class RecipeServiceImpl implements RecipeService {
     private List<Recipe_Ingredient> createIngredients(List<IngredientRequestDTO.IngredientAndQuantityDTO> ingredientList, Recipe recipe) {
         return ingredientList.stream()
                 .map(ingredientRequestDTO -> {
-                    // Ingredient 객체 생성
-                    Ingredient ingredient = Ingredient.builder()
-                            .name(ingredientRequestDTO.getName())
-                            .build();
-
-                    // Ingredient 저장
-                    ingredient = ingredientRepository.save(ingredient);
+                    // Ingredient 객체 검색 (중복 방지)
+                    Ingredient ingredient = ingredientRepository.findByName(ingredientRequestDTO.getName())
+                            .orElseGet(() -> {
+                                // 존재하지 않을 경우 새로 생성하여 저장
+                                Ingredient newIngredient = Ingredient.builder()
+                                        .name(ingredientRequestDTO.getName())
+                                        .build();
+                                return ingredientRepository.save(newIngredient);
+                            });
 
                     // Recipe_Ingredient 객체 생성 및 저장
                     Recipe_Ingredient recipeIngredient = Recipe_Ingredient.builder()
