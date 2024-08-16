@@ -14,6 +14,7 @@ public class RecipeConverter {
                 .username(comment.getMember().getUsername())
                 .content(comment.getContent())
                 .commentId((comment.getId()))
+                .imageUrl(comment.getMember().getProfile().getUrl())
                 .createdAt(comment.getCreatedAt().toLocalDate())
                 .build();
     }
