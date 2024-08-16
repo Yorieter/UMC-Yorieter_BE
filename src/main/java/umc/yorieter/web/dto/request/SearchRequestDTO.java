@@ -15,8 +15,6 @@ public class SearchRequestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class SearchRecipeDTO {
-        private Integer maxCalorie;
-        private Integer minCalorie;
         private List<String> ingredientNames;
     }
 

@@ -31,11 +31,7 @@ public class SearchServiceImpl implements SearchService {
     @Transactional
     @Override
     public SearchResponseDTO.AllRecipeListDto getAllRecipes(SearchRequestDTO.SearchRecipeDTO searchRequestDTO) {
-        Integer maxCalorie = searchRequestDTO.getMaxCalorie();
-        Integer minCalorie = searchRequestDTO.getMinCalorie();
         List<String> ingredientNames = searchRequestDTO.getIngredientNames();
-
-
 
         // 1. 식재료 이름으로 ingredient_id 찾기
         List<Long> ingredientIds = ingredientNames.stream()
@@ -60,14 +56,14 @@ public class SearchServiceImpl implements SearchService {
 
 
         // 필터링: 칼로리 범위에 맞는 레시피만 선택
-        List<Recipe> filteredRecipes = recipes.stream()
-                .filter(recipe ->recipe.getCalories()!= null &&  recipe.getCalories() >= minCalorie && recipe.getCalories() <= maxCalorie)
-                .toList();
+        //List<Recipe> filteredRecipes = recipes.stream()
+        //        .filter(recipe ->recipe.getCalories()!= null &&  recipe.getCalories() >= minCalorie && recipe.getCalories() <= maxCalorie)
+        //        .toList();
 
 
 
         // DTO 변환
-        List<SearchResponseDTO.DetailRecipeDTO> detailRecipeDTOS = filteredRecipes.stream()
+        List<SearchResponseDTO.DetailRecipeDTO> detailRecipeDTOS = recipes.stream()
                 .map(recipe -> {
                     Integer calories = recipe.getCalories() != null ? recipe.getCalories() : 0; // 기본값 0 설정
                     // 식재료 리스트 가져오기
