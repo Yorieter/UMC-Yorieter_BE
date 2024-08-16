@@ -64,6 +64,7 @@ public class RecipeResponseDTO {
         String username;
         String content;
         Long commentId;
+        String imageUrl;
         LocalDate createdAt;
     }
 }

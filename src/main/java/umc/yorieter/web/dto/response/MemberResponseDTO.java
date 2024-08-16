@@ -56,6 +56,7 @@ public class MemberResponseDTO {
     public static class RecipePreViewDTO{
         String title;
         Long recipeId;
+        String imageUrl;
         LocalDate createdAt;
     }
 
@@ -80,6 +81,7 @@ public class MemberResponseDTO {
     public static class CommentPreViewDTO{
         String username;
         String content;
+        String profileUrl;
         LocalDate createdAt;
     }
 
