@@ -47,7 +47,7 @@ public class MemberConverter {
         return MemberResponseDTO.RecipePreViewDTO.builder()
                 .title(recipe.getTitle())
                 .recipeId(recipe.getId())
-                .imageUrl(recipe.getRecipeImage().getUrl())
+                .imageUrl(recipe.getRecipeImage()!=null ? recipe.getRecipeImage().getUrl():null)
                 .createdAt(recipe.getCreatedAt().toLocalDate())
                 .build();
     }
