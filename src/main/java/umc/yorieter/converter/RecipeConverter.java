@@ -13,6 +13,7 @@ public class RecipeConverter {
         return RecipeResponseDTO.CommentPreViewDTO.builder()
                 .username(comment.getMember().getUsername())
                 .content(comment.getContent())
+                .commentId((comment.getId()))
                 .createdAt(comment.getCreatedAt().toLocalDate())
                 .build();
     }
