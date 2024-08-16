@@ -34,7 +34,7 @@ public class MemberQueryServiceImpl implements MemberQueryService{
     @Override
     public Page<Comment> getCommentListByMemberId(Long memberId, Integer page) {
 
-        Member member = memberRepository.findById(memberId).get();
+        Member member = memberRepository.findById(memberId).orElse(null);
 
         Page<Comment> memberPage = commentRepository.findAllByMember(member,
                 PageRequest.of(page, 10));
@@ -44,7 +44,7 @@ public class MemberQueryServiceImpl implements MemberQueryService{
     @Override
     public Page<Recipe> getRecipeListByMemberId(Long memberId, Integer page) {
 
-        Member member = memberRepository.findById(memberId).get();
+        Member member = memberRepository.findById(memberId).orElse(null);
 
         Page<Recipe> recipePage = recipeRepository.findAllByMember(member,
                 PageRequest.of(page, 10));
