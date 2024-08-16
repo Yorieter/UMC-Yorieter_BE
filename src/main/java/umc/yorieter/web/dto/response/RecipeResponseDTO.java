@@ -63,6 +63,7 @@ public class RecipeResponseDTO {
     public static class CommentPreViewDTO{
         String username;
         String content;
+        Long commentId;
         LocalDate createdAt;
     }
 }
