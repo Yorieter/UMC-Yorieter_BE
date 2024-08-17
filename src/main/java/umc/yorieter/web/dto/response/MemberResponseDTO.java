@@ -106,6 +106,7 @@ public class MemberResponseDTO {
     public static class RecipeLikePreViewDTO{
         String title;
         Long recipeId;
+        String imageUrl;
         LocalDate createdAt;
     }
 }
