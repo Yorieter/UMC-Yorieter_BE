@@ -27,11 +27,15 @@ public class CommentResponseDTO {
     private Long recipeId;
     private Long parentCommentId;
     private List<CommentResponseDTO> childComments;
+    private String memberNickname;
+    private String memberProfile;
 
     public static CommentResponseDTO fromComment(Comment comment) {
         return CommentResponseDTO.builder()
                 .id(comment.getId())
                 .memberId(comment.getMember().getId())
+                .memberNickname(comment.getMember().getNickname())
+                .memberProfile(comment.getMember().getProfile().getUrl())
                 .recipeId(comment.getRecipe().getId())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
