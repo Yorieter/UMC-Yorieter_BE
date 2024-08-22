@@ -1,6 +1,7 @@
 package umc.yorieter.web.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,8 @@ public class RecipeResponseDTO {
         private Integer calories;
         private String imageUrl;
         private List<String> ingredientNames; // 식재료 리스트 추가
+
+        @JsonInclude(JsonInclude.Include.ALWAYS) // 항상 포함되도록 설정
         private boolean isLiked; // 좋아요 여부 추가
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
