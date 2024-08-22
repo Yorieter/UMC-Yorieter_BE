@@ -182,6 +182,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         // 시도... findAllWithIngredientsSortedByLikes
         List<Recipe> recipes = recipeRepository.findAllWithIngredientsSortedByLikes();
+        Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 회원 ID 가져오기
 
         List<RecipeResponseDTO.DetailRecipeDTO> detailRecipeDTOs = recipes.stream()
                 .map(recipe -> {
@@ -189,6 +190,11 @@ public class RecipeServiceImpl implements RecipeService {
                     List<String> ingredientNames = recipe.getRecipeIngredientList().stream()
                             .map(recipeIngredient -> recipeIngredient.getIngredient().getName()) // 각 재료의 이름을 추출
                             .collect(Collectors.toList());
+
+                    // 좋아요 여부 확인
+                    boolean isLiked = recipeLikeRepository.findByMemberAndRecipe(
+                            memberRepository.findById(currentMemberId).orElse(null), recipe
+                    ).isPresent();
 
                     // DetailRecipeDTO 생성
                     return RecipeResponseDTO.DetailRecipeDTO.builder()
@@ -199,6 +205,7 @@ public class RecipeServiceImpl implements RecipeService {
                             .calories(recipe.getCalories())
                             .imageUrl(recipe.getRecipeImage() != null ? recipe.getRecipeImage().getUrl() : null)
                             .ingredientNames(ingredientNames) // 식재료 리스트 추가
+                            .isLiked(isLiked) // 좋아요 여부 추가
                             .createdAt(recipe.getCreatedAt())
                             .updatedAt(recipe.getUpdatedAt())
                             .build();
@@ -225,6 +232,14 @@ public class RecipeServiceImpl implements RecipeService {
                 .map(recipeIngredient -> recipeIngredient.getIngredient().getName())
                 .toList();
 
+        // 현재 회원 ID 가져오기
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // 좋아요 여부 확인
+        boolean isLiked = recipeLikeRepository.findByMemberAndRecipe(
+                memberRepository.findById(currentMemberId).orElse(null), recipe
+        ).isPresent();
+
 
         return RecipeResponseDTO.DetailRecipeDTO.builder()
                 .recipeId(recipe.getId())
@@ -234,6 +249,7 @@ public class RecipeServiceImpl implements RecipeService {
                 .calories(recipe.getCalories())
                 .imageUrl(recipe.getRecipeImage() != null ? recipe.getRecipeImage().getUrl() : null)
                 .ingredientNames(ingredientNames) // 식재료 리스트 추가
+                .isLiked(isLiked) // 좋아요 여부 추가
                 .createdAt(recipe.getCreatedAt())
                 .updatedAt(recipe.getUpdatedAt())
                 .build();
